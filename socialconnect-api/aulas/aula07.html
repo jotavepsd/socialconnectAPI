@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 07 - Material Didático: Testes Automatizados e Qualidade</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e; --sidebar-bg: #252526; --text-color: #d4d4d4;
+            --accent-color: #007acc; --highlight-bg: #2d2d30;
+            --keyword: #569cd6; --string: #ce9178; --class: #4ec9b0;
+            --annotation: #dcdcaa; --comment: #6a9955;
+            --warning-bg: #3a2a00; --warning-border: #ffa500;
+            --success-bg: #1a3a1a; --success-border: #4caf50;
+            --info-bg: #1a2a3a; --info-border: #2196f3;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color); color: var(--text-color);
+            line-height: 1.8; display: flex; min-height: 100vh;
+        }
+        nav {
+            width: 300px; background-color: var(--sidebar-bg); padding: 20px;
+            position: fixed; height: 100vh; overflow-y: auto; border-right: 1px solid #333;
+        }
+        nav h2 {
+            font-size: 1.2rem; color: var(--accent-color); margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;
+        }
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 6px; }
+        nav a {
+            color: var(--text-color); text-decoration: none; font-size: 0.85rem;
+            display: block; padding: 6px 8px; border-radius: 4px; transition: background 0.2s;
+        }
+        nav a:hover { background-color: var(--highlight-bg); color: #fff; }
+        nav .section-title {
+            color: #888; font-size: 0.75rem; text-transform: uppercase;
+            margin-top: 15px; margin-bottom: 5px; font-weight: bold;
+        }
+        main { margin-left: 300px; padding: 40px; max-width: 1100px; width: 100%; }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; }
+        .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 30px; }
+        h2 {
+            font-size: 1.8rem; color: var(--accent-color); margin-top: 50px;
+            margin-bottom: 20px; border-left: 4px solid var(--accent-color); padding-left: 15px;
+        }
+        h3 { font-size: 1.4rem; color: #fff; margin: 30px 0 15px 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        p, li { margin-bottom: 10px; }
+        .info-box { background-color: var(--info-bg); border-left: 4px solid var(--info-border); padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .success-box { background-color: var(--success-bg); border-left: 4px solid var(--success-border); padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .warning-box { background-color: var(--warning-bg); border-left: 4px solid var(--warning-border); padding: 15px; margin: 20px 0; border-radius: 4px; }
+        pre {
+            background-color: #0d0d0d; border: 1px solid #333; border-radius: 6px;
+            padding: 20px; overflow-x: auto; margin: 20px 0; position: relative;
+        }
+        code { font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem; color: #d4d4d4; }
+        .kw { color: var(--keyword); } .str { color: var(--string); }
+        .cls { color: var(--class); } .ann { color: var(--annotation); }
+        .cmt { color: var(--comment); font-style: italic; }
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px; background-color: var(--accent-color);
+            color: white; border: none; padding: 5px 10px; border-radius: 4px;
+            cursor: pointer; font-size: 0.8rem; opacity: 0.7; transition: opacity 0.2s;
+        }
+        .copy-btn:hover { opacity: 1; }
+        footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #333; text-align: center; color: #666; font-size: 0.9rem; }
+        @media (max-width: 1024px) { nav { width: 250px; } main { margin-left: 250px; padding: 20px; } }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>📚 Aula 07</h2>
+    <div class="section-title">Conceitos</div>
+    <ul>
+        <li><a href="#objetivos">🎯 Objetivos</a></li>
+        <li><a href="#piramide">🏔️ Pirâmide de Testes</a></li>
+        <li><a href="#unitarios">🧪 Testes Unitários (Padrão do Repo)</a></li>
+    </ul>
+    <div class="section-title">Ferramentas</div>
+    <ul>
+        <li><a href="#junit">📋 JUnit 5 & Mockito</a></li>
+        <li><a href="#testcontainers">🐳 Testcontainers</a></li>
+    </ul>
+    <div class="section-title">Código Real</div>
+    <ul>
+        <li><a href="#exemplo-repo">💻 Exemplo: DoacaoServiceTest</a></li>
+        <li><a href="#config-test">⚙️ Configuração de Teste</a></li>
+    </ul>
+    <div class="section-title">Prática</div>
+    <ul>
+        <li><a href="#tdd">🔄 TDD</a></li>
+        <li><a href="#dojo">🎪 Dojo de Testes</a></li>
+        <li><a href="#armadilhas">⚠️ Armadilhas</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h1>Aula 07: Testes Automatizados e Qualidade</h1>
+    <p class="subtitle">Tópicos Especiais em Sistemas para Internet III | Alinhado ao Repositório SocialConnect</p>
+
+    <div class="success-box">
+        <strong>✅ Status do Repositório:</strong> O projeto já possui a estrutura de testes configurada, dependências do Testcontainers 1.19.3 e exemplos reais de testes unitários seguindo as melhores práticas. Esta aula expandirá esse conhecimento.
+    </div>
+
+    <section id="objetivos">
+        <h2>🎯 Objetivos de Aprendizagem</h2>
+        <ul>
+            <li>Compreender a diferença entre testes unitários (rápidos, mockados) e de integração (lentos, banco real).</li>
+            <li>Aplicar o padrão <strong>AAA (Arrange-Act-Assert)</strong> com comentários explícitos, conforme o padrão do repositório.</li>
+            <li>Usar <code>@ExtendWith(MockitoExtension.class)</code> para testes unitários puros, sem a sobrecarga do <code>@SpringBootTest</code>.</li>
+            <li>Configurar e utilizar o <strong>Testcontainers</strong> para subir um PostgreSQL 17 efêmero durante os testes de integração.</li>
+        </ul>
+    </section>
+
+    <section id="piramide">
+        <h2>🏔️ A Pirâmide de Testes no SocialConnect</h2>
+        <table>
+            <thead><tr><th>Tipo</th><th>Escopo</th><th>Ferramenta</th><th>Exemplo no Repo</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Unitário</strong></td>
+                    <td>Uma classe isolada (ex: Service)</td>
+                    <td>JUnit 5 + Mockito</td>
+                    <td><code>DoacaoServiceTest.java</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Integração</strong></td>
+                    <td>Controller + Service + Banco Real</td>
+                    <td>Testcontainers + @SpringBootTest</td>
+                    <td><code>BeneficiarioControllerIntegrationTest.java</code> (a ser criado)</td>
+                </tr>
+                <tr>
+                    <td><strong>E2E</strong></td>
+                    <td>Sistema completo (Front + API + DB)</td>
+                    <td>Cypress / Playwright</td>
+                    <td>Foco na A4 (Extensão)</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="unitarios">
+        <h2>🧪 O Padrão de Testes Unitários do Nosso Repo</h2>
+        <p>Observe que nos arquivos de teste do repositório (<code>BeneficiarioServiceTest</code> e <code>DoacaoServiceTest</code>), <strong>não usamos</strong> <code>@SpringBootTest</code>. Em vez disso, usamos:</p>
+        <pre><code><span class="ann">@ExtendWith</span>(MockitoExtension.class)
+<span class="kw">class</span> <span class="cls">DoacaoServiceTest</span> {
+    <span class="ann">@Mock</span>
+    <span class="kw">private</span> <span class="cls">DoacaoRepository</span> doacaoRepository;
+
+    <span class="ann">@InjectMocks</span>
+    <span class="kw">private</span> <span class="cls">DoacaoService</span> doacaoService;
+    <span class="cmt">// ...</span>
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        <div class="info-box">
+            <strong>💡 Por que isso é melhor?</strong><br>
+            O <code>@SpringBootTest</code> sobe todo o contexto da aplicação (banco, segurança, beans), o que pode levar segundos. O <code>@ExtendWith(MockitoExtension.class)</code> é instantâneo e isola perfeitamente a lógica de negócio, que é o objetivo de um teste <em>unitário</em>.
+        </div>
+    </section>
+
+    <section id="exemplo-repo">
+        <h2>💻 Exemplo Real do Repositório: DoacaoServiceTest</h2>
+        <p>Este é o código exato que já está no seu repositório. Note a clareza dos comentários <strong>ARRANGE, ACT, ASSERT</strong>:</p>
+        <pre><code><span class="ann">@Test</span>
+<span class="ann">@DisplayName</span>(<span class="str">"Deve criar doação quando dados válidos"</span>)
+<span class="kw">void</span> deveCriarDoacaoQuandoDadosValidos() {
+    <span class="cmt">// ==========================================</span>
+    <span class="cmt">// ARRANGE: Preparar o cenário</span>
+    <span class="cmt">// ==========================================</span>
+    <span class="cls">DoacaoRequestDTO</span> dto = <span class="kw">new</span> <span class="cls">DoacaoRequestDTO</span>(
+        1L, LocalDate.of(2026, 9, 11), <span class="kw">new</span> BigDecimal(<span class="str">"100.00"</span>), 
+        TipoDoacao.ALIMENTO, <span class="str">"Doação de teste"</span>
+    );
+    
+    <span class="cls">Doacao</span> doacaoSalva = <span class="cls">Doacao</span>.builder().idDoacao(1L).build();
+    Mockito.when(doacaoRepository.save(Mockito.any())).thenReturn(doacaoSalva);
+
+    <span class="cmt">// ==========================================</span>
+    <span class="cmt">// ACT: Executar a ação</span>
+    <span class="cmt">// ==========================================</span>
+    <span class="cls">DoacaoResponseDTO</span> resultado = doacaoService.criar(dto);
+
+    <span class="cmt">// ==========================================</span>
+    <span class="cmt">// ASSERT: Verificar o resultado</span>
+    <span class="cmt">// ==========================================</span>
+    Assertions.assertNotNull(resultado.idDoacao(), <span class="str">"ID da doação não deve ser nulo"</span>);
+    Assertions.assertEquals(<span class="kw">new</span> BigDecimal(<span class="str">"100.00"</span>), resultado.valor());
+    Mockito.verify(doacaoRepository, Mockito.times(1)).save(Mockito.any());
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <section id="config-test">
+        <h2>⚙️ Configuração de Teste (Já presente no repo)</h2>
+        <p>O repositório já possui o arquivo <code>application-test.properties</code> configurado para usar o Testcontainers:</p>
+        <pre><code><span class="cmt"># Usar Testcontainers para subir um PostgreSQL real</span>
+spring.datasource.url=jdbc:tc:postgresql:17:///testdb
+spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver
+spring.datasource.username=test
+spring.datasource.password=test
+
+<span class="cmt"># JPA/Hibernate</span>
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=validate
+
+<span class="cmt"># Flyway (executa as migrations no banco do Testcontainers)</span>
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        <div class="success-box">
+            <strong>✅ Vantagem:</strong> Ao rodar testes de integração, o Spring detectará este perfil e usará o PostgreSQL real, garantindo que as migrations do Flyway e as constraints do JPA funcionam exatamente como em produção.
+        </div>
+    </section>
+
+    <section id="tdd">
+        <h2>🔄 TDD: Test-Driven Development</h2>
+        <p>O ciclo que praticaremos no Dojo:</p>
+        <ol>
+            <li><strong>RED</strong>: Escrever um teste que falha (ex: tentar salvar doação com data futura).</li>
+            <li><strong>GREEN</strong>: Implementar a validação <code>@DataNaoFutura</code> no DTO para o teste passar.</li>
+            <li><strong>REFACTOR</strong>: Melhorar a mensagem de erro no <code>messages.properties</code> sem quebrar o teste.</li>
+        </ol>
+    </section>
+
+    <section id="dojo">
+        <h2>🎪 Dojo de Testes: Atividade Prática (40 min)</h2>
+        <div class="warning-box">
+            <strong>🎯 Desafio para as Duplas:</strong>
+            <ol style="margin-top: 10px;">
+                <li><strong>Complementar o <code>DoacaoServiceTest.java</code></strong>: Adicionar o teste <code>deveLancarExcecaoQuandoDoadorNaoExistir</code> (mockar o <code>DoadorRepository</code> para retornar <code>Optional.empty()</code>).</li>
+                <li><strong>Criar o <code>DoacaoControllerIntegrationTest.java</code></strong>:
+                    <ul>
+                        <li>Usar <code>@SpringBootTest(webEnvironment = RANDOM_PORT)</code> e <code>@Testcontainers</code>.</li>
+                        <li>Testar <code>POST /api/v1/doacoes</code> com dados válidos (esperar 201 Created).</li>
+                        <li>Testar <code>POST /api/v1/doacoes</code> com <code>dataDoacao</code> no futuro (esperar 400 Bad Request com Problem Details).</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        <p><strong>Regras:</strong> Use o padrão AAA com comentários. Execute <code>mvn test</code> antes de finalizar. Duas duplas serão sorteadas para apresentar a solução.</p>
+    </section>
+
+    <section id="armadilhas">
+        <h2>⚠️ Armadilhas Comuns</h2>
+        <ul>
+            <li><strong>Esquecer o <code>Mockito.when</code></strong>: O mock retorna <code>null</code> por padrão, causando <code>NullPointerException</code> no passo ACT.</li>
+            <li><strong>Usar <code>@SpringBootTest</code> em testes unitários</strong>: Deixa a suíte de testes lenta desnecessariamente. Reserve-o para integração.</li>
+            <li><strong>Não limpar o banco entre testes de integração</strong>: Use <code>@DirtiesContext</code> ou scripts de limpeza se os testes começarem a interferir uns nos outros.</li>
+            <li><strong>Testar detalhes de implementação</strong>: Foque no comportamento (entrada → saída), não em quantas vezes um método privado foi chamado.</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>Material de apoio gerado para a disciplina ITE005 | SocialConnect API | Aula 07<br>
+        <em>Alinhado ao estado atual do repositório GitHub: Prof-JamesCampos/socialconnect-api</em></p>
+    </footer>
+</main>
+
+<script>
+    function copyCode(button) {
+        const pre = button.parentElement;
+        const code = pre.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.innerText;
+            button.innerText = 'Copiado!';
+            button.style.backgroundColor = '#4caf50';
+            setTimeout(() => { button.innerText = originalText; button.style.backgroundColor = ''; }, 2000);
+        });
+    }
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
+</body>
+</html>

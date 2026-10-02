@@ -1,0 +1,843 @@
+
+---
+
+## 🌐 2. Material Didático Completo (HTML)
+
+Salve este conteúdo como `aula04-material.html`. Ele segue o mesmo padrão visual da Aula 03 (dark mode, navegação lateral, botões de copiar).
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 04 - Material Didático: Persistência com JPA e Migrations</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --sidebar-bg: #252526;
+            --text-color: #d4d4d4;
+            --accent-color: #007acc;
+            --highlight-bg: #2d2d30;
+            --keyword: #569cd6;
+            --string: #ce9178;
+            --class: #4ec9b0;
+            --annotation: #dcdcaa;
+            --comment: #6a9955;
+            --warning-bg: #3a2a00;
+            --warning-border: #ffa500;
+            --success-bg: #1a3a1a;
+            --success-border: #4caf50;
+            --info-bg: #1a2a3a;
+            --info-border: #2196f3;
+            --danger-bg: #3a1a1a;
+            --danger-border: #f44336;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        nav {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+
+        nav h2 {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 8px; }
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        nav a:hover { background-color: var(--highlight-bg); color: #fff; }
+        nav .section-title {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        main {
+            margin-left: 300px;
+            padding: 40px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; }
+        .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 30px; }
+        
+        h2 { 
+            font-size: 1.8rem; 
+            color: var(--accent-color); 
+            margin-top: 50px; 
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        h3 { 
+            font-size: 1.4rem; 
+            color: #fff; 
+            margin: 30px 0 15px 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin: 20px 0 10px 0;
+        }
+
+        p { margin-bottom: 15px; }
+
+        .golden-rule {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .info-box {
+            background-color: var(--info-bg);
+            border-left: 4px solid var(--info-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background-color: var(--success-bg);
+            border-left: 4px solid var(--success-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .danger-box {
+            background-color: var(--danger-bg);
+            border-left: 4px solid var(--danger-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        pre {
+            background-color: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+
+        .kw { color: var(--keyword); }
+        .str { color: var(--string); }
+        .cls { color: var(--class); }
+        .ann { color: var(--annotation); }
+        .cmt { color: var(--comment); font-style: italic; }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .copy-btn:hover { opacity: 1; }
+
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin-bottom: 10px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #2d2d30;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+        th {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #252526; }
+
+        .diagram {
+            background-color: #2d2d30;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .diagram-box {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            min-width: 150px;
+        }
+        .diagram-arrow {
+            display: inline-block;
+            color: var(--accent-color);
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            nav { width: 250px; }
+            main { margin-left: 250px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>📚 Conteúdo da Aula 04</h2>
+    
+    <div class="section-title">Introdução</div>
+    <ul>
+        <li><a href="#objetivos">🎯 Objetivos de Aprendizagem</a></li>
+        <li><a href="#problema">⚠️ O Problema do ddl-auto</a></li>
+        <li><a href="#solucao">💡 A Solução: Flyway</a></li>
+    </ul>
+
+    <div class="section-title">Conceitos Fundamentais</div>
+    <ul>
+        <li><a href="#regra-ouro">🏆 A Regra de Ouro (id_)</a></li>
+        <li><a href="#nomenclatura">📋 Convenção de Nomenclatura</a></li>
+        <li><a href="#flyway-conceito">🔄 Como o Flyway Funciona</a></li>
+    </ul>
+
+    <div class="section-title">Implementação Prática</div>
+    <ul>
+        <li><a href="#passo1">1️⃣ Dependência do Flyway</a></li>
+        <li><a href="#passo2">2️⃣ Configuração application.properties</a></li>
+        <li><a href="#passo3">3️⃣ Estrutura de Pastas</a></li>
+        <li><a href="#passo4">4️⃣ Script de Migration</a></li>
+        <li><a href="#passo5">5️⃣ Validação do Mapeamento JPA</a></li>
+        <li><a href="#passo6">6️⃣ Teste e Validação</a></li>
+    </ul>
+
+    <div class="section-title">Dinâmica e Boas Práticas</div>
+    <ul>
+        <li><a href="#dinamica">🔄 Revisão Cruzada de Esquema</a></li>
+        <li><a href="#armadilhas">⚠️ Armadilhas Comuns</a></li>
+        <li><a href="#resumo">📝 Resumo da Aula</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h1>Aula 04: Persistência com JPA e Migrations</h1>
+    <p class="subtitle">Tópicos Especiais em Sistemas para Internet III | Material Didático Completo</p>
+
+    <div class="golden-rule">
+        🏆 REGRA DE OURO DA DISCIPLINA: Chaves primárias no banco de dados DEVEM usar o prefixo <code>id_</code> (ex: <code>id_beneficiario</code>, <code>id_doacao</code>).
+    </div>
+
+    <!-- OBJETIVOS -->
+    <section id="objetivos">
+        <h2>🎯 Objetivos de Aprendizagem</h2>
+        <p>Ao final desta aula, você será capaz de:</p>
+        <ul>
+            <li><strong>Compreender</strong> os riscos do <code>ddl-auto</code> em ambientes reais (perda de dados, inconsistência).</li>
+            <li><strong>Configurar</strong> o Flyway como ferramenta de controle de versão de banco de dados.</li>
+            <li><strong>Criar</strong> scripts de migration seguindo o padrão <code>V&lt;numero&gt;__&lt;descricao&gt;.sql</code>.</li>
+            <li><strong>Aplicar</strong> rigorosamente o padrão <code>id_</code> para chaves primárias.</li>
+            <li><strong>Validar</strong> o mapeamento JPA contra um esquema gerenciado pelo Flyway.</li>
+        </ul>
+    </section>
+
+    <!-- O PROBLEMA -->
+    <section id="problema">
+        <h2>⚠️ O Problema do <code>ddl-auto</code></h2>
+        
+        <p>Nas aulas anteriores, configuramos o Hibernate para gerenciar automaticamente o esquema do banco:</p>
+        <pre><code>spring.jpa.hibernate.ddl-auto=create-drop</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>Por que isso é PERIGOSO em produção?</h3>
+        
+        <div class="danger-box">
+            <strong>❌ Riscos do <code>create-drop</code>:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Perda de dados:</strong> Apaga todas as tabelas ao reiniciar a aplicação.</li>
+                <li><strong>Inconsistência:</strong> <code>update</code> não remove colunas antigas nem aplica renomeações.</li>
+                <li><strong>Sem histórico:</strong> Não há registro de como o banco evoluiu ao longo do tempo.</li>
+                <li><strong>Ambientes divergentes:</strong> Dev, homologação e produção ficam com esquemas diferentes.</li>
+            </ul>
+        </div>
+
+        <h3>Exemplo Prático do Problema</h3>
+        <p>Imagine que você adicionou uma coluna <code>telefone</code> na Entity <code>Beneficiario</code> e usou <code>ddl-auto=update</code>:</p>
+        <ul>
+            <li>O Hibernate adiciona a coluna no banco.</li>
+            <li>Mas e se você precisar <strong>renomear</strong> a coluna de <code>telefone</code> para <code>contato</code>?</li>
+            <li>O <code>update</code> não faz isso. Ele cria uma nova coluna <code>contato</code> e mantém a antiga <code>telefone</code> vazia.</li>
+            <li>Resultado: dados perdidos, esquema inconsistente.</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>💡 Conclusão:</strong> O Hibernate é ótimo para mapear objetos, mas péssimo para <em>gerenciar a evolução</em> do esquema do banco. Precisamos de uma ferramenta especializada.
+        </div>
+    </section>
+
+    <!-- A SOLUÇÃO -->
+    <section id="solucao">
+        <h2>💡 A Solução: Database Migrations com Flyway</h2>
+        
+        <h3>O que é Database Migration?</h3>
+        <p>Controle de versão do esquema do banco de dados, similar ao Git para código. Cada mudança no banco é registrada em um arquivo SQL versionado.</p>
+
+        <h3>Ferramenta: Flyway</h3>
+        <p>O Flyway é uma biblioteca Java que:</p>
+        <ul>
+            <li>Executa scripts SQL em ordem (<code>V1</code>, <code>V2</code>, <code>V3</code>...).</li>
+            <li>Garante que todos os ambientes (dev, homologação, produção) tenham o mesmo esquema.</li>
+            <li>Rastreia o que já foi executado na tabela <code>flyway_schema_history</code>.</li>
+            <li>Impede que o mesmo script seja executado duas vezes.</li>
+        </ul>
+
+        <h3>Fluxo de Trabalho</h3>
+        <div class="diagram">
+            <div class="diagram-box">Script SQL<br><small>(V1__create_table.sql)</small></div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-box">Flyway<br><small>(Executa)</small></div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-box">Banco Atualizado<br><small>(Tabela criada)</small></div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-box">Hibernate<br><small>(Apenas valida)</small></div>
+        </div>
+
+        <div class="success-box">
+            <strong>✅ Benefícios:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Reprodutibilidade:</strong> Qualquer desenvolvedor pode criar o banco do zero executando os scripts.</li>
+                <li><strong>Rastreabilidade:</strong> O histórico de mudanças fica no Git junto com o código.</li>
+                <li><strong>Segurança:</strong> Mudanças são revisadas em Pull Requests antes de serem aplicadas.</li>
+                <li><strong>Portabilidade:</strong> Funciona com H2, PostgreSQL, MySQL, Oracle, etc.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- REGRA DE OURO -->
+    <section id="regra-ouro">
+        <h2>🏆 A Regra de Ouro: Padrão <code>id_</code></h2>
+        
+        <p>Na disciplina, adotamos uma convenção rigorosa de nomenclatura para chaves primárias:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Camada</th>
+                    <th>Convenção</th>
+                    <th>Exemplo</th>
+                    <th>Justificativa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Banco de Dados</strong></td>
+                    <td><code>snake_case</code> com prefixo <code>id_</code></td>
+                    <td><code>id_beneficiario</code></td>
+                    <td>Legibilidade em SQL, evita ambiguidade em joins</td>
+                </tr>
+                <tr>
+                    <td><strong>Java (Atributo)</strong></td>
+                    <td><code>camelCase</code></td>
+                    <td><code>idBeneficiario</code></td>
+                    <td>Convenção Java, compatibilidade com Lombok</td>
+                </tr>
+                <tr>
+                    <td><strong>Ponte (JPA)</strong></td>
+                    <td><code>@Column(name = "...")</code></td>
+                    <td><code>@Column(name = "id_beneficiario")</code></td>
+                    <td>Mapeia a variável Java para a coluna SQL</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="danger-box">
+            <strong>⚠️ Erro Comum:</strong> Tentar nomear o atributo Java como <code>id_beneficiario</code> (com underscore).<br>
+            <strong>Por que está errado?</strong> O Lombok gera getters baseados no nome da variável. Se a variável for <code>id_beneficiario</code>, o getter será <code>getId_beneficiario()</code>, violando a convenção Java e causando confusão.
+        </div>
+
+        <div class="success-box">
+            <strong>✅ Forma Correta:</strong>
+            <pre style="margin-top: 10px;"><code><span class="ann">@Column</span>(name = <span class="str">"id_beneficiario"</span>) <span class="cmt">// Nome da coluna no banco</span>
+<span class="kw">private</span> Long idBeneficiario; <span class="cmt">// Nome da variável em Java (camelCase)</span></code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        </div>
+    </section>
+
+    <!-- CONVENÇÃO DE NOMENCLATURA -->
+    <section id="nomenclatura">
+        <h2>📋 Convenção Completa de Nomenclatura</h2>
+        
+        <h3>Tabelas</h3>
+        <ul>
+            <li><strong>Plural:</strong> <code>beneficiarios</code>, <code>doadores</code>, <code>doacoes</code></li>
+            <li><strong>snake_case:</strong> <code>itens_doacao</code> (não <code>itensDoacao</code>)</li>
+        </ul>
+
+        <h3>Colunas</h3>
+        <ul>
+            <li><strong>Chaves primárias:</strong> <code>id_&lt;entidade&gt;</code> (ex: <code>id_beneficiario</code>)</li>
+            <li><strong>Chaves estrangeiras:</strong> <code>id_&lt;entidade_referenciada&gt;</code> (ex: <code>id_doador</code> na tabela <code>doacoes</code>)</li>
+            <li><strong>Demais colunas:</strong> <code>snake_case</code> (ex: <code>data_cadastro</code>, <code>situacao_vulnerabilidade</code>)</li>
+        </ul>
+
+        <h3>Índices</h3>
+        <ul>
+            <li><strong>Padrão:</strong> <code>idx_&lt;tabela&gt;_&lt;coluna&gt;</code></li>
+            <li><strong>Exemplo:</strong> <code>idx_beneficiarios_cpf</code></li>
+        </ul>
+
+        <div class="info-box">
+            <strong>💡 Dica:</strong> Siga essas convenções em todos os scripts de migration. Isso facilita a leitura do SQL e a manutenção do banco ao longo do tempo.
+        </div>
+    </section>
+
+    <!-- FLYWAY CONCEITO -->
+    <section id="flyway-conceito">
+        <h2>🔄 Como o Flyway Funciona</h2>
+        
+        <h3>Nomenclatura dos Scripts</h3>
+        <p>O Flyway exige um formato específico para os nomes dos arquivos:</p>
+        <pre><code>V&lt;numero&gt;__&lt;descricao&gt;.sql</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        
+        <p><strong>Exemplos válidos:</strong></p>
+        <ul>
+            <li><code>V1__create_beneficiarios_table.sql</code></li>
+            <li><code>V2__create_doadores_table.sql</code></li>
+            <li><code>V3__add_telefone_to_beneficiarios.sql</code></li>
+        </ul>
+
+        <div class="danger-box">
+            <strong>⚠️ Atenção:</strong> São <strong>dois underlines</strong> (<code>__</code>) entre o número e a descrição. Um underline só (<code>V1_create...</code>) não funciona.
+        </div>
+
+        <h3>Tabela de Histórico</h3>
+        <p>O Flyway cria automaticamente uma tabela chamada <code>flyway_schema_history</code> no banco, que registra:</p>
+        <ul>
+            <li>Qual script foi executado.</li>
+            <li>Quando foi executado.</li>
+            <li>Quem executou.</li>
+            <li>Checksum do arquivo (para detectar alterações indevidas).</li>
+        </ul>
+
+        <h3>Ordem de Execução</h3>
+        <p>O Flyway executa os scripts em ordem alfabética/numérica:</p>
+        <ol>
+            <li><code>V1__create_beneficiarios_table.sql</code></li>
+            <li><code>V2__create_doadores_table.sql</code></li>
+            <li><code>V3__add_telefone_to_beneficiarios.sql</code></li>
+        </ol>
+
+        <div class="info-box">
+            <strong>💡 Importante:</strong> Nunca altere um script que já foi executado em produção. Se precisar fazer uma mudança, crie um novo script (<code>V4__...</code>).
+        </div>
+    </section>
+
+    <!-- PASSO 1 -->
+    <section id="passo1">
+        <h2>1️⃣ Adicionar Dependência do Flyway</h2>
+        
+        <p>No arquivo <code>pom.xml</code>, adicione a dependência do Flyway:</p>
+        <pre><code><span class="ann">&lt;dependency&gt;</span>
+    <span class="ann">&lt;groupId&gt;</span>org.flywaydb<span class="ann">&lt;/groupId&gt;</span>
+    <span class="ann">&lt;artifactId&gt;</span>flyway-core<span class="ann">&lt;/artifactId&gt;</span>
+<span class="ann">&lt;/dependency&gt;</span></code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Nota:</strong> O Spring Boot gerencia a versão do Flyway automaticamente via BOM (Bill of Materials). Você não precisa especificar a versão.
+        </div>
+    </section>
+
+    <!-- PASSO 2 -->
+    <section id="passo2">
+        <h2>2️⃣ Configurar <code>application.properties</code></h2>
+        
+        <h3>Mudança Crítica: <code>ddl-auto</code></h3>
+        <pre><code><span class="cmt"># ANTES (Aula 03):</span>
+spring.jpa.hibernate.ddl-auto=create-drop
+
+<span class="cmt"># AGORA (Aula 04 em diante):</span>
+spring.jpa.hibernate.ddl-auto=validate</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <p><strong>O que mudou?</strong></p>
+        <ul>
+            <li><code>create-drop</code>: O Hibernate cria as tabelas ao iniciar e apaga ao fechar.</li>
+            <li><code>validate</code>: O Hibernate apenas verifica se o esquema do banco bate com as Entities. Ele <strong>NÃO</strong> cria, altera ou apaga tabelas.</li>
+        </ul>
+
+        <h3>Configuração do Flyway</h3>
+        <pre><code><span class="cmt"># ==========================================================</span>
+<span class="cmt"># Flyway (Migrations)</span>
+<span class="cmt"># ==========================================================</span>
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+spring.flyway.baseline-on-migrate=true</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <p><strong>Explicação das propriedades:</strong></p>
+        <ul>
+            <li><code>spring.flyway.enabled=true</code>: Ativa o Flyway.</li>
+            <li><code>spring.flyway.locations=classpath:db/migration</code>: Indica onde os scripts estão localizados.</li>
+            <li><code>spring.flyway.baseline-on-migrate=true</code>: Cria uma linha de base se o banco já existir (útil para bancos legados).</li>
+        </ul>
+    </section>
+
+    <!-- PASSO 3 -->
+    <section id="passo3">
+        <h2>3️⃣ Estrutura de Pastas</h2>
+        
+        <p>Crie a seguinte estrutura de diretórios:</p>
+        <pre><code>src/main/resources/
+ └── db/
+      └── migration/
+           └── V1__create_beneficiarios_table.sql</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Dica:</strong> No IntelliJ ou VS Code, clique com o botão direito na pasta <code>resources</code> → New → Directory → <code>db/migration</code>.
+        </div>
+    </section>
+
+    <!-- PASSO 4 -->
+    <section id="passo4">
+        <h2>4️⃣ Criar o Script de Migration</h2>
+        
+        <p>Crie o arquivo <code>V1__create_beneficiarios_table.sql</code> dentro da pasta <code>db/migration</code>:</p>
+        <pre><code><span class="cmt">-- Migration: V1 - Criação da tabela de beneficiários</span>
+<span class="cmt">-- Padrão da disciplina: chaves primárias com prefixo 'id_'</span>
+
+<span class="kw">CREATE TABLE</span> beneficiarios (
+    id_beneficiario <span class="cls">BIGINT</span> <span class="kw">GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY</span>,
+    nome <span class="cls">VARCHAR</span>(150) <span class="kw">NOT NULL</span>,
+    cpf <span class="cls">VARCHAR</span>(14) <span class="kw">NOT NULL UNIQUE</span>,
+    telefone <span class="cls">VARCHAR</span>(20),
+    endereco <span class="cls">VARCHAR</span>(255),
+    situacao_vulnerabilidade <span class="cls">VARCHAR</span>(500),
+    data_cadastro <span class="cls">DATE</span> <span class="kw">NOT NULL</span>
+);
+
+<span class="cmt">-- Índice opcional para otimizar buscas por CPF (boa prática)</span>
+<span class="kw">CREATE INDEX</span> idx_beneficiarios_cpf <span class="kw">ON</span> beneficiarios(cpf);</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>Pontos de Atenção:</h3>
+        <ul>
+            <li><strong>Chave primária:</strong> <code>id_beneficiario BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY</code>
+                <ul>
+                    <li><code>BIGINT</code>: Tipo recomendado para chaves primárias (evita estouro em sistemas reais).</li>
+                    <li><code>GENERATED BY DEFAULT AS IDENTITY</code>: Padrão SQL que funciona no H2 e PostgreSQL (portabilidade).</li>
+                    <li><code>PRIMARY KEY</code>: Define a coluna como chave primária.</li>
+                </ul>
+            </li>
+            <li><strong>Colunas:</strong> Seguem o padrão <code>snake_case</code> (<code>situacao_vulnerabilidade</code>, <code>data_cadastro</code>).</li>
+            <li><strong>Índice:</strong> <code>idx_beneficiarios_cpf</code> otimiza buscas por CPF (boa prática para colunas frequentemente consultadas).</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Portabilidade:</strong> O uso de <code>GENERATED BY DEFAULT AS IDENTITY</code> garante que o script funcione tanto no H2 (desenvolvimento) quanto no PostgreSQL (produção), sem necessidade de ajustes.
+        </div>
+    </section>
+
+    <!-- PASSO 5 -->
+    <section id="passo5">
+        <h2>5️⃣ Validar o Mapeamento JPA</h2>
+        
+        <p>A Entity <code>Beneficiario.java</code> deve estar mapeada corretamente para bater com o esquema criado pelo Flyway:</p>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.model;
+
+<span class="kw">import</span> jakarta.persistence.*;
+<span class="kw">import</span> lombok.*;
+<span class="kw">import</span> java.time.LocalDate;
+
+<span class="ann">@Entity</span>
+<span class="ann">@Table</span>(name = <span class="str">"beneficiarios"</span>)
+<span class="ann">@Getter</span>
+<span class="ann">@Setter</span>
+<span class="ann">@NoArgsConstructor</span>
+<span class="ann">@AllArgsConstructor</span>
+<span class="ann">@Builder</span>
+<span class="kw">public class</span> <span class="cls">Beneficiario</span> {
+
+    <span class="ann">@Id</span>
+    <span class="ann">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)
+    <span class="ann">@Column</span>(name = <span class="str">"id_beneficiario"</span>) <span class="cmt">// ⚠️ Deve bater EXATAMENTE com o SQL</span>
+    <span class="kw">private</span> Long idBeneficiario; <span class="cmt">// camelCase no Java</span>
+
+    <span class="ann">@Column</span>(nullable = <span class="kw">false</span>, length = 150)
+    <span class="kw">private</span> String nome;
+
+    <span class="ann">@Column</span>(nullable = <span class="kw">false</span>, unique = <span class="kw">true</span>, length = 14)
+    <span class="kw">private</span> String cpf;
+
+    <span class="ann">@Column</span>(length = 20)
+    <span class="kw">private</span> String telefone;
+
+    <span class="ann">@Column</span>(length = 255)
+    <span class="kw">private</span> String endereco;
+
+    <span class="ann">@Column</span>(name = <span class="str">"situacao_vulnerabilidade"</span>, length = 500)
+    <span class="kw">private</span> String situacaoVulnerabilidade;
+
+    <span class="ann">@Column</span>(name = <span class="str">"data_cadastro"</span>, nullable = <span class="kw">false</span>)
+    <span class="kw">private</span> LocalDate dataCadastro;
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>Validação Automática</h3>
+        <p>Com <code>ddl-auto=validate</code>, o Hibernate verifica ao iniciar se:</p>
+        <ul>
+            <li>O nome da tabela bate (<code>beneficiarios</code>).</li>
+            <li>O nome das colunas bate (<code>id_beneficiario</code>, <code>situacao_vulnerabilidade</code>, etc.).</li>
+            <li>Os tipos de dados são compatíveis (<code>BIGINT</code> ↔ <code>Long</code>, <code>VARCHAR</code> ↔ <code>String</code>, etc.).</li>
+            <li>As restrições são respeitadas (<code>NOT NULL</code>, <code>UNIQUE</code>, etc.).</li>
+        </ul>
+
+        <div class="danger-box">
+            <strong>⚠️ Erro Comum:</strong> Se o nome da coluna no SQL não bater com o <code>@Column(name = "...")</code>, o Hibernate lança um erro ao iniciar:
+            <pre style="margin-top: 10px;"><code>org.hibernate.tool.schema.spi.SchemaManagementException: 
+Schema-validation: missing column [id_beneficiario]</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        </div>
+    </section>
+
+    <!-- PASSO 6 -->
+    <section id="passo6">
+        <h2>6️⃣ Teste e Validação</h2>
+        
+        <h3>Passo a Passo:</h3>
+        <ol>
+            <li><strong>Iniciar a aplicação:</strong>
+                <pre><code>mvn spring-boot:run</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+            </li>
+            <li><strong>Verificar os logs:</strong>
+                <p>Procure por estas mensagens:</p>
+                <pre><code><span class="cmt"># Flyway executou a migration:</span>
+Successfully validated and ran 1 migration
+
+<span class="cmt"># Hibernate validou o esquema:</span>
+HHH000228: Running hbm2ddl schema validator</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+            </li>
+            <li><strong>Acessar o H2 Console:</strong>
+                <ul>
+                    <li>URL: <a href="http://localhost:8080/h2-console" target="_blank" style="color: var(--accent-color);">http://localhost:8080/h2-console</a></li>
+                    <li>JDBC URL: <code>jdbc:h2:mem:socialconnectdb</code></li>
+                    <li>User: <code>sa</code> | Password: (vazio)</li>
+                </ul>
+            </li>
+            <li><strong>Executar queries no H2 Console:</strong>
+                <pre><code><span class="cmt">-- Verificar se a tabela foi criada:</span>
+<span class="kw">SHOW TABLES</span>;
+
+<span class="cmt">-- Ver o esquema da tabela:</span>
+<span class="kw">SCRIPT</span> beneficiarios;
+
+<span class="cmt">-- Ver a tabela de histórico do Flyway:</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> flyway_schema_history;</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+            </li>
+            <li><strong>Testar com Swagger:</strong>
+                <ul>
+                    <li>Acesse: <a href="http://localhost:8080/swagger-ui.html" target="_blank" style="color: var(--accent-color);">http://localhost:8080/swagger-ui.html</a></li>
+                    <li>Faça um <code>POST</code> em <code>/api/v1/beneficiarios</code> com um JSON de exemplo.</li>
+                    <li>Valide o retorno <code>201 Created</code>.</li>
+                    <li>Faça um <code>GET</code> em <code>/api/v1/beneficiarios</code> para ver o registro salvo.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <div class="success-box">
+            <strong>✅ Validação Completa:</strong> Se você conseguiu ver a tabela no H2 Console, fazer um POST e um GET com sucesso, a integração Flyway + JPA está funcionando perfeitamente!
+        </div>
+    </section>
+
+    <!-- DINÂMICA -->
+    <section id="dinamica">
+        <h2>🔄 Dinâmica: Revisão Cruzada de Esquema</h2>
+        
+        <h3>Atividade em Duplas (30 min)</h3>
+        
+        <h4>Desafio:</h4>
+        <p>Cada dupla deve escrever:</p>
+        <ol>
+            <li>Script <code>V2__create_doadores_table.sql</code></li>
+            <li>Entity <code>Doador.java</code> correspondente</li>
+        </ol>
+
+        <h4>Requisitos:</h4>
+        <ul>
+            <li>Chave primária: <code>id_doador</code></li>
+            <li>Colunas: <code>nome</code>, <code>tipo</code> (PESSOA_FISICA ou PESSOA_JURIDICA), <code>email</code>, <code>telefone</code></li>
+            <li>Entity com <code>@Column(name = "...")</code> para todas as colunas snake_case</li>
+        </ul>
+
+        <h4>Revisão Cruzada:</h4>
+        <p>As duplas trocam de lugar e validam o código do colega usando este checklist:</p>
+        <ul>
+            <li>[ ] O arquivo está na pasta <code>db/migration</code>?</li>
+            <li>[ ] O nome do arquivo segue o padrão <code>V&lt;numero&gt;__&lt;descricao&gt;.sql</code>?</li>
+            <li>[ ] A chave primária tem o prefixo <code>id_</code>?</li>
+            <li>[ ] A Entity usa <code>@Column(name = "...")</code> corretamente?</li>
+            <li>[ ] Os tipos de dados são compatíveis (SQL ↔ Java)?</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>💡 Objetivo Pedagógico:</strong> A revisão cruzada simula um <em>Pull Request Review</em> real, onde os alunos praticam a leitura crítica de código e a comunicação técnica.
+        </div>
+    </section>
+
+    <!-- ARMADILHAS -->
+    <section id="armadilhas">
+        <h2>⚠️ Armadilhas Comuns</h2>
+        
+        <h3>1. Nome do arquivo de migration errado</h3>
+        <p><strong>❌ Errado:</strong> <code>V1_create_table.sql</code> (um underline)</p>
+        <p><strong>✅ Correto:</strong> <code>V1__create_table.sql</code> (dois underlines)</p>
+        <p><strong>Sintoma:</strong> O Flyway ignora o arquivo ou lança erro de sintaxe.</p>
+
+        <h3>2. Esquecer de mudar o <code>ddl-auto</code></h3>
+        <p><strong>❌ Errado:</strong> Deixar <code>spring.jpa.hibernate.ddl-auto=create-drop</code></p>
+        <p><strong>✅ Correto:</strong> <code>spring.jpa.hibernate.ddl-auto=validate</code></p>
+        <p><strong>Sintoma:</strong> O Hibernate conflita com o Flyway, criando/apagando tabelas inesperadamente.</p>
+
+        <h3>3. Divergência de nomes</h3>
+        <p><strong>❌ Errado:</strong> SQL com <code>id_beneficiario</code>, mas Entity sem <code>@Column(name = "id_beneficiario")</code></p>
+        <p><strong>✅ Correto:</strong> Sempre mapear explicitamente com <code>@Column</code></p>
+        <p><strong>Sintoma:</strong> Erro <code>Schema-validation: missing column [id_beneficiario]</code> ao iniciar.</p>
+
+        <h3>4. Tipo incompatível</h3>
+        <p><strong>❌ Errado:</strong> SQL com <code>INT</code>, Java com <code>Long</code></p>
+        <p><strong>✅ Correto:</strong> SQL com <code>BIGINT</code>, Java com <code>Long</code></p>
+        <p><strong>Sintoma:</strong> Erro de validação de esquema ou estouro de capacidade em produção.</p>
+
+        <h3>5. Alterar script já executado</h3>
+        <p><strong>❌ Errado:</strong> Modificar <code>V1__create_table.sql</code> depois que ele já foi executado</p>
+        <p><strong>✅ Correto:</strong> Criar um novo script <code>V2__alter_table.sql</code></p>
+        <p><strong>Sintoma:</strong> Erro de checksum no Flyway (<code>Checksum mismatch</code>).</p>
+    </section>
+
+    <!-- RESUMO -->
+    <section id="resumo">
+        <h2>📝 Resumo da Aula</h2>
+        
+        <ul>
+            <li><strong>Flyway</strong> substitui o <code>ddl-auto</code> para controle de versão do banco de dados.</li>
+            <li><strong>Scripts</strong> seguem o padrão <code>V&lt;numero&gt;__&lt;descricao&gt;.sql</code> (dois underlines).</li>
+            <li><strong>Padrão <code>id_</code></strong> é obrigatório para chaves primárias no banco de dados.</li>
+            <li><strong><code>@Column(name = "...")</code></strong> faz a ponte entre Java (camelCase) e SQL (snake_case).</li>
+            <li><strong><code>ddl-auto=validate</code></strong> garante que o Hibernate apenas confira o esquema, sem alterá-lo.</li>
+            <li><strong>Revisão cruzada</strong> simula Pull Request Reviews e fortalece a colaboração.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Próxima Aula (05):</strong> API REST: CRUD, DTOs e Semântica HTTP Avançada<br>
+            <ul style="margin-top: 10px;">
+                <li>Paginação com <code>Pageable</code></li>
+                <li>Filtros dinâmicos (ex: buscar doações por período)</li>
+                <li>Idempotência em operações PUT/DELETE</li>
+                <li>Mob Programming: construir o CRUD de Doações juntos</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>Material de apoio gerado para a disciplina ITE005 | SocialConnect API | Aula 04</p>
+    </footer>
+</main>
+
+<script>
+    function copyCode(button) {
+        const pre = button.parentElement;
+        const code = pre.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.innerText;
+            button.innerText = 'Copiado!';
+            button.style.backgroundColor = '#4caf50';
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.style.backgroundColor = '';
+            }, 2000);
+        });
+    }
+
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

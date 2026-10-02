@@ -1,0 +1,1058 @@
+
+---
+
+## 🌐 2. Material Didático Completo (HTML)
+
+Salve como `aula05-material.html`.
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 05 - Material Didático: API REST, CRUD, DTOs e Semântica HTTP</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --sidebar-bg: #252526;
+            --text-color: #d4d4d4;
+            --accent-color: #007acc;
+            --highlight-bg: #2d2d30;
+            --keyword: #569cd6;
+            --string: #ce9178;
+            --class: #4ec9b0;
+            --annotation: #dcdcaa;
+            --comment: #6a9955;
+            --warning-bg: #3a2a00;
+            --warning-border: #ffa500;
+            --success-bg: #1a3a1a;
+            --success-border: #4caf50;
+            --info-bg: #1a2a3a;
+            --info-border: #2196f3;
+            --danger-bg: #3a1a1a;
+            --danger-border: #f44336;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            display: flex;
+            min-height: 100vh;
+        }
+        nav {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+        nav h2 {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 6px; }
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        nav a:hover { background-color: var(--highlight-bg); color: #fff; }
+        nav .section-title {
+            color: #888;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        main {
+            margin-left: 300px;
+            padding: 40px;
+            max-width: 1100px;
+            width: 100%;
+        }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; }
+        .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 30px; }
+        h2 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-top: 50px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+        }
+        h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin: 30px 0 15px 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+        h4 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin: 20px 0 10px 0;
+        }
+        p { margin-bottom: 15px; }
+        .golden-rule {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .info-box {
+            background-color: var(--info-bg);
+            border-left: 4px solid var(--info-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success-box {
+            background-color: var(--success-bg);
+            border-left: 4px solid var(--success-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .danger-box {
+            background-color: var(--danger-bg);
+            border-left: 4px solid var(--danger-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+        }
+        code {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+        .kw { color: var(--keyword); }
+        .str { color: var(--string); }
+        .cls { color: var(--class); }
+        .ann { color: var(--annotation); }
+        .cmt { color: var(--comment); font-style: italic; }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .copy-btn:hover { opacity: 1; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin-bottom: 10px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #2d2d30;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+        th {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #252526; }
+        .http-get { color: #61affe; font-weight: bold; }
+        .http-post { color: #49cc90; font-weight: bold; }
+        .http-put { color: #fca130; font-weight: bold; }
+        .http-patch { color: #50e3c2; font-weight: bold; }
+        .http-delete { color: #f93e3e; font-weight: bold; }
+        .endpoint-box {
+            background-color: #2d2d30;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+        }
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 1024px) {
+            nav { width: 250px; }
+            main { margin-left: 250px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>📚 Aula 05</h2>
+
+    <div class="section-title">Semântica HTTP</div>
+    <ul>
+        <li><a href="#objetivos">🎯 Objetivos</a></li>
+        <li><a href="#metodos">📋 Métodos HTTP</a></li>
+        <li><a href="#status-codes">🏷️ Códigos de Status</a></li>
+        <li><a href="#cabecalhos">📎 Cabeçalhos Importantes</a></li>
+    </ul>
+
+    <div class="section-title">DTOs</div>
+    <ul>
+        <li><a href="#dto-problema">⚠️ O Problema do DTO Único</a></li>
+        <li><a href="#dto-solucao">✅ Request vs Response</a></li>
+        <li><a href="#dto-impl">💻 Implementação</a></li>
+    </ul>
+
+    <div class="section-title">CRUD Avançado</div>
+    <ul>
+        <li><a href="#put-vs-patch">🔄 PUT vs PATCH</a></li>
+        <li><a href="#crud-controller">💻 Controller Completo</a></li>
+        <li><a href="#crud-service">💻 Service Completo</a></li>
+    </ul>
+
+    <div class="section-title">Paginação e Filtros</div>
+    <ul>
+        <li><a href="#paginacao">📄 Paginação com Pageable</a></li>
+        <li><a href="#filtros">🔍 Filtros Dinâmicos</a></li>
+        <li><a href="#paginacao-impl">💻 Implementação</a></li>
+    </ul>
+
+    <div class="section-title">Boas Práticas</div>
+    <ul>
+        <li><a href="#idempotencia">🔁 Idempotência</a></li>
+        <li><a href="#mob">🚀 Mob Programming</a></li>
+        <li><a href="#armadilhas">⚠️ Armadilhas</a></li>
+        <li><a href="#resumo">📝 Resumo</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h1>Aula 05: API REST — CRUD, DTOs e Semântica HTTP</h1>
+    <p class="subtitle">Tópicos Especiais em Sistemas para Internet III | Material Didático Completo</p>
+
+    <div class="golden-rule">
+        🏆 REGRA DE OURO DA DISCIPLINA: Chaves primárias no banco de dados DEVEM usar o prefixo <code>id_</code> (ex: <code>id_beneficiario</code>, <code>id_doacao</code>).
+    </div>
+
+    <!-- OBJETIVOS -->
+    <section id="objetivos">
+        <h2>🎯 Objetivos de Aprendizagem</h2>
+        <p>Ao final desta aula, você será capaz de:</p>
+        <ul>
+            <li><strong>Aplicar</strong> semântica HTTP rigorosa (métodos, status codes, cabeçalhos).</li>
+            <li><strong>Diferenciar</strong> DTOs de Request e Response (separação de concerns).</li>
+            <li><strong>Implementar</strong> CRUD completo com PUT vs PATCH.</li>
+            <li><strong>Adicionar</strong> paginação com <code>Pageable</code> do Spring Data.</li>
+            <li><strong>Construir</strong> filtros dinâmicos via query parameters.</li>
+            <li><strong>Compreender</strong> idempotência e quando ela se aplica.</li>
+        </ul>
+    </section>
+
+    <!-- MÉTODOS HTTP -->
+    <section id="metodos">
+        <h2>📋 Métodos HTTP e Suas Semânticas</h2>
+
+        <p>A semântica HTTP define o <strong>significado</strong> de cada método. Usar o método errado é como usar um verbo errado em uma frase: a mensagem chega, mas causa confusão.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Método</th>
+                    <th>Semântica</th>
+                    <th>Idempotente?</th>
+                    <th>Seguro?</th>
+                    <th>Exemplo SocialConnect</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="http-get">GET</span></td>
+                    <td>Ler/consultar recurso</td>
+                    <td>✅ Sim</td>
+                    <td>✅ Sim</td>
+                    <td><code>GET /api/v1/beneficiarios/1</code></td>
+                </tr>
+                <tr>
+                    <td><span class="http-post">POST</span></td>
+                    <td>Criar novo recurso</td>
+                    <td>❌ Não</td>
+                    <td>❌ Não</td>
+                    <td><code>POST /api/v1/beneficiarios</code></td>
+                </tr>
+                <tr>
+                    <td><span class="http-put">PUT</span></td>
+                    <td>Substituir recurso por completo</td>
+                    <td>✅ Sim</td>
+                    <td>❌ Não</td>
+                    <td><code>PUT /api/v1/beneficiarios/1</code></td>
+                </tr>
+                <tr>
+                    <td><span class="http-patch">PATCH</span></td>
+                    <td>Atualizar parcialmente</td>
+                    <td>❌ Não*</td>
+                    <td>❌ Não</td>
+                    <td><code>PATCH /api/v1/beneficiarios/1</code></td>
+                </tr>
+                <tr>
+                    <td><span class="http-delete">DELETE</span></td>
+                    <td>Remover recurso</td>
+                    <td>✅ Sim</td>
+                    <td>❌ Não</td>
+                    <td><code>DELETE /api/v1/beneficiarios/1</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>💡 Conceitos-chave:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Seguro:</strong> O método não altera o estado do servidor. Apenas <code>GET</code> e <code>HEAD</code> são seguros.</li>
+                <li><strong>Idempotente:</strong> Executar 1x ou 100x produz o mesmo resultado. <code>POST</code> é o único método CRUD que NÃO é idempotente.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- STATUS CODES -->
+    <section id="status-codes">
+        <h2>🏷️ Códigos de Status HTTP</h2>
+
+        <p>Os status codes são a <strong>linguagem universal</strong> da API. O Front-end depende deles para tomar decisões (ex: redirecionar após login, mostrar mensagem de erro).</p>
+
+        <h3>2xx — Sucesso</h3>
+        <table>
+            <thead>
+                <tr><th>Código</th><th>Significado</th><th>Quando Usar</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>200 OK</strong></td><td>Requisição bem-sucedida</td><td>GET, PUT, PATCH com corpo de resposta</td></tr>
+                <tr><td><strong>201 Created</strong></td><td>Recurso criado</td><td>POST (com cabeçalho <code>Location</code>)</td></tr>
+                <tr><td><strong>204 No Content</strong></td><td>Sucesso sem corpo</td><td>DELETE, PUT sem retorno</td></tr>
+            </tbody>
+        </table>
+
+        <h3>4xx — Erro do Cliente</h3>
+        <table>
+            <thead>
+                <tr><th>Código</th><th>Significado</th><th>Quando Usar</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>400 Bad Request</strong></td><td>Requisição malformada</td><td>JSON inválido, campos faltando</td></tr>
+                <tr><td><strong>404 Not Found</strong></td><td>Recurso não existe</td><td>ID inexistente</td></tr>
+                <tr><td><strong>409 Conflict</strong></td><td>Conflito de estado</td><td>CPF já cadastrado</td></tr>
+                <tr><td><strong>422 Unprocessable</strong></td><td>Semântica inválida</td><td>CPF com formato correto mas inválido</td></tr>
+            </tbody>
+        </table>
+
+        <h3>5xx — Erro do Servidor</h3>
+        <table>
+            <thead>
+                <tr><th>Código</th><th>Significado</th><th>Quando Usar</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>500 Internal Error</strong></td><td>Erro inesperado</td><td>Exceção não tratada (NPE, DB down)</td></tr>
+            </tbody>
+        </table>
+
+        <div class="danger-box">
+            <strong>⚠️ Erro Comum:</strong> Retornar <code>200 OK</code> para tudo, inclusive erros. Isso quebra a semântica e impede o Front-end de reagir corretamente. Exemplo: retornar <code>200</code> com <code>{"erro": "não encontrado"}</code> em vez de <code>404</code>.
+        </div>
+    </section>
+
+    <!-- CABEÇALHOS -->
+    <section id="cabecalhos">
+        <h2>📎 Cabeçalhos HTTP Importantes</h2>
+
+        <table>
+            <thead>
+                <tr><th>Cabeçalho</th><th>Direção</th><th>Uso</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>Content-Type</code></td><td>Request/Response</td><td>Indica o formato do corpo (<code>application/json</code>)</td></tr>
+                <tr><td><code>Accept</code></td><td>Request</td><td>Indica o formato que o cliente aceita</td></tr>
+                <tr><td><code>Location</code></td><td>Response</td><td>URL do recurso criado (obrigatório no <code>201</code>)</td></tr>
+                <tr><td><code>Authorization</code></td><td>Request</td><td>Token de autenticação (<code>Bearer xxx</code>)</td></tr>
+                <tr><td><code>Idempotency-Key</code></td><td>Request</td><td>Chave única para evitar POSTs duplicados</td></tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>💡 Cabeçalho Location no POST:</strong><br>
+            Quando você cria um recurso com POST, a resposta <code>201 Created</code> DEVE incluir o cabeçalho <code>Location</code> apontando para o novo recurso:
+            <pre style="margin-top: 10px;"><code>HTTP/1.1 201 Created
+Location: /api/v1/beneficiarios/42
+Content-Type: application/json</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        </div>
+    </section>
+
+    <!-- DTO PROBLEMA -->
+    <section id="dto-problema">
+        <h2>⚠️ O Problema do DTO Único</h2>
+
+        <p>Nas aulas anteriores, usamos um único <code>BeneficiarioDTO</code> para entrada e saída. Isso funciona para protótipos, mas causa problemas em APIs reais:</p>
+
+        <h3>Problema 1: Campos de Resposta no Request</h3>
+        <p>O cliente pode enviar <code>idBeneficiario</code> e <code>dataCadastro</code> no POST, tentando forçar valores que deveriam ser gerados pelo servidor.</p>
+
+        <h3>Problema 2: Campos Sensíveis na Resposta</h3>
+        <p>Se a Entity tiver um campo <code>senha</code> ou <code>observacoesInternas</code>, ele pode vazar na resposta JSON se você retornar a Entity diretamente.</p>
+
+        <h3>Problema 3: Acoplamento</h3>
+        <p>Mudanças na Entity (ex: adicionar campo de auditoria) afetam automaticamente o contrato da API, quebrando clientes existentes.</p>
+
+        <div class="danger-box">
+            <strong>⚠️ Regra:</strong> Nunca exponha a Entity JPA diretamente no Controller. Sempre use DTOs. E em APIs reais, separe DTOs de Request e Response.
+        </div>
+    </section>
+
+    <!-- DTO SOLUÇÃO -->
+    <section id="dto-solucao">
+        <h2>✅ Solução: DTOs Separados (Request vs Response)</h2>
+
+        <h3>Fluxo de Dados</h3>
+        <table>
+            <thead>
+                <tr><th>Operação</th><th>Entrada (Request)</th><th>Saída (Response)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>POST (Criar)</td><td><code>BeneficiarioRequestDTO</code></td><td><code>BeneficiarioResponseDTO</code></td></tr>
+                <tr><td>PUT (Substituir)</td><td><code>BeneficiarioRequestDTO</code></td><td><code>BeneficiarioResponseDTO</code></td></tr>
+                <tr><td>PATCH (Parcial)</td><td><code>BeneficiarioPatchDTO</code></td><td><code>BeneficiarioResponseDTO</code></td></tr>
+                <tr><td>GET (Ler)</td><td>—</td><td><code>BeneficiarioResponseDTO</code></td></tr>
+            </tbody>
+        </table>
+
+        <div class="success-box">
+            <strong>✅ Benefícios:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Segurança:</strong> O cliente não pode forçar campos do servidor (ex: <code>idBeneficiario</code>).</li>
+                <li><strong>Clareza:</strong> O contrato da API documenta exatamente o que entra e o que sai.</li>
+                <li><strong>Flexibilidade:</strong> A resposta pode incluir campos calculados (ex: <code>totalDoacoes</code>) que não existem na Entity.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- DTO IMPL -->
+    <section id="dto-impl">
+        <h2>💻 Implementação dos DTOs</h2>
+
+        <h3>BeneficiarioRequestDTO.java</h3>
+        <p>Pacote: <code>br.com.socialconnect.api.beneficiarios.dto</code></p>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.dto;
+
+<span class="kw">import</span> jakarta.validation.constraints.*;
+
+<span class="cmt">// DTO de ENTRADA: apenas campos que o cliente pode enviar</span>
+<span class="kw">public record</span> <span class="cls">BeneficiarioRequestDTO</span>(
+
+    <span class="ann">@NotBlank</span>(message = <span class="str">"Nome é obrigatório"</span>)
+    <span class="ann">@Size</span>(max = 150, message = <span class="str">"Nome deve ter no máximo 150 caracteres"</span>)
+    String nome,
+
+    <span class="ann">@NotBlank</span>(message = <span class="str">"CPF é obrigatório"</span>)
+    <span class="ann">@Pattern</span>(regexp = <span class="str">"\\d{11}|\\d{14}"</span>, message = <span class="str">"CPF inválido"</span>)
+    String cpf,
+
+    String telefone,
+    String endereco,
+    String situacaoVulnerabilidade
+
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>BeneficiarioResponseDTO.java</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.dto;
+
+<span class="kw">import</span> java.time.LocalDate;
+
+<span class="cmt">// DTO de SAÍDA: inclui campos gerados pelo servidor</span>
+<span class="kw">public record</span> <span class="cls">BeneficiarioResponseDTO</span>(
+    Long idBeneficiario,
+    String nome,
+    String cpf,
+    String telefone,
+    String endereco,
+    String situacaoVulnerabilidade,
+    LocalDate dataCadastro
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>BeneficiarioPatchDTO.java</h3>
+        <p>Para o PATCH, todos os campos são opcionais (o cliente envia apenas o que quer alterar):</p>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.dto;
+
+<span class="cmt">// DTO para PATCH: todos os campos opcionais</span>
+<span class="kw">public record</span> <span class="cls">BeneficiarioPatchDTO</span>(
+    String nome,
+    String telefone,
+    String endereco,
+    String situacaoVulnerabilidade
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Nota sobre validação:</strong> As anotações <code>@NotBlank</code>, <code>@Size</code> e <code>@Pattern</code> são do Jakarta Bean Validation. Elas serão exploradas em profundidade na Aula 06, mas já as incluímos aqui para demonstrar a separação de responsabilidades.
+        </div>
+    </section>
+
+    <!-- PUT vs PATCH -->
+    <section id="put-vs-patch">
+        <h2>🔄 PUT vs PATCH: Quando Usar Cada Um?</h2>
+
+        <h3>PUT — Substituição Total</h3>
+        <p>O cliente envia <strong>todos</strong> os campos do recurso. Campos ausentes são definidos como <code>null</code>.</p>
+
+        <div class="endpoint-box">
+            <span class="http-put">PUT</span> /api/v1/beneficiarios/1
+        </div>
+        <pre><code>{
+  "nome": "Maria da Silva Santos",
+  "cpf": "12345678900",
+  "telefone": "11988887777",
+  "endereco": "Rua Nova, 456",
+  "situacaoVulnerabilidade": "Renda familiar baixa"
+}
+<span class="cmt">// Se "telefone" fosse omitido, ele seria definido como null no banco.</span></code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>PATCH — Atualização Parcial</h3>
+        <p>O cliente envia <strong>apenas os campos que deseja alterar</strong>. Campos ausentes permanecem inalterados.</p>
+
+        <div class="endpoint-box">
+            <span class="http-patch">PATCH</span> /api/v1/beneficiarios/1
+        </div>
+        <pre><code>{
+  "telefone": "11988887777"
+}
+<span class="cmt">// Apenas o telefone é atualizado. Os demais campos permanecem iguais.</span></code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <table>
+            <thead>
+                <tr><th>Característica</th><th>PUT</th><th>PATCH</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Campos enviados</td><td>Todos</td><td>Apenas os alterados</td></tr>
+                <tr><td>Campos ausentes</td><td>Viram <code>null</code></td><td>Permanecem inalterados</td></tr>
+                <tr><td>Idempotente</td><td>✅ Sim</td><td>❌ Não (geralmente)</td></tr>
+                <tr><td>Caso de uso</td><td>Edição completa de formulário</td><td>Edição rápida de um campo</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- CONTROLLER COMPLETO -->
+    <section id="crud-controller">
+        <h2>💻 Controller Completo (CRUD + Paginação + Filtros)</h2>
+
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.controller;
+
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.dto.*;
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.service.BeneficiarioService;
+<span class="kw">import</span> jakarta.validation.Valid;
+<span class="kw">import</span> org.springframework.data.domain.Page;
+<span class="kw">import</span> org.springframework.data.domain.Pageable;
+<span class="kw">import</span> org.springframework.data.web.PageableDefault;
+<span class="kw">import</span> org.springframework.http.ResponseEntity;
+<span class="kw">import</span> org.springframework.web.bind.annotation.*;
+
+<span class="kw">import</span> java.net.URI;
+
+<span class="ann">@RestController</span>
+<span class="ann">@RequestMapping</span>(<span class="str">"/api/v1/beneficiarios"</span>)
+<span class="kw">public class</span> <span class="cls">BeneficiarioController</span> {
+
+    <span class="kw">private final</span> <span class="cls">BeneficiarioService</span> service;
+
+    <span class="kw">public</span> <span class="cls">BeneficiarioController</span>(<span class="cls">BeneficiarioService</span> service) {
+        <span class="kw">this</span>.service = service;
+    }
+
+    <span class="cmt">// ✅ GET com paginação e filtros</span>
+    <span class="ann">@GetMapping</span>
+    <span class="kw">public</span> ResponseEntity&lt;Page&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt;&gt; listar(
+            <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) String nome,
+            <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) String cpf,
+            <span class="ann">@PageableDefault</span>(size = 10, sort = <span class="str">"nome"</span>) Pageable pageable) {
+        <span class="kw">return</span> ResponseEntity.ok(service.listar(nome, cpf, pageable));
+    }
+
+    <span class="cmt">// ✅ GET por ID</span>
+    <span class="ann">@GetMapping</span>(<span class="str">"/{idBeneficiario}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt; buscarPorId(
+            <span class="ann">@PathVariable</span> Long idBeneficiario) {
+        <span class="kw">return</span> ResponseEntity.ok(service.buscarPorId(idBeneficiario));
+    }
+
+    <span class="cmt">// ✅ POST com validação e 201 Created</span>
+    <span class="ann">@PostMapping</span>
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt; criar(
+            <span class="ann">@Valid</span> <span class="ann">@RequestBody</span> <span class="cls">BeneficiarioRequestDTO</span> dto) {
+        <span class="cls">BeneficiarioResponseDTO</span> salvo = service.criar(dto);
+        URI location = URI.create(<span class="str">"/api/v1/beneficiarios/"</span> + salvo.idBeneficiario());
+        <span class="kw">return</span> ResponseEntity.created(location).body(salvo);
+    }
+
+    <span class="cmt">// ✅ PUT (substituição total)</span>
+    <span class="ann">@PutMapping</span>(<span class="str">"/{idBeneficiario}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt; atualizar(
+            <span class="ann">@PathVariable</span> Long idBeneficiario,
+            <span class="ann">@Valid</span> <span class="ann">@RequestBody</span> <span class="cls">BeneficiarioRequestDTO</span> dto) {
+        <span class="kw">return</span> ResponseEntity.ok(service.atualizar(idBeneficiario, dto));
+    }
+
+    <span class="cmt">// ✅ PATCH (atualização parcial)</span>
+    <span class="ann">@PatchMapping</span>(<span class="str">"/{idBeneficiario}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt; atualizarParcial(
+            <span class="ann">@PathVariable</span> Long idBeneficiario,
+            <span class="ann">@RequestBody</span> <span class="cls">BeneficiarioPatchDTO</span> dto) {
+        <span class="kw">return</span> ResponseEntity.ok(service.atualizarParcial(idBeneficiario, dto));
+    }
+
+    <span class="cmt">// ✅ DELETE com 204 No Content</span>
+    <span class="ann">@DeleteMapping</span>(<span class="str">"/{idBeneficiario}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;Void&gt; deletar(
+            <span class="ann">@PathVariable</span> Long idBeneficiario) {
+        service.deletar(idBeneficiario);
+        <span class="kw">return</span> ResponseEntity.noContent().build();
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- SERVICE COMPLETO -->
+    <section id="crud-service">
+        <h2>💻 Service Completo (CRUD + Paginação + Filtros)</h2>
+
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.service;
+
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.dto.*;
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.model.Beneficiario;
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.repository.BeneficiarioRepository;
+<span class="kw">import</span> org.springframework.data.domain.Page;
+<span class="kw">import</span> org.springframework.data.domain.Pageable;
+<span class="kw">import</span> org.springframework.stereotype.Service;
+
+<span class="kw">import</span> java.time.LocalDate;
+
+<span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">BeneficiarioService</span> {
+
+    <span class="kw">private final</span> <span class="cls">BeneficiarioRepository</span> repository;
+
+    <span class="kw">public</span> <span class="cls">BeneficiarioService</span>(<span class="cls">BeneficiarioRepository</span> repository) {
+        <span class="kw">this</span>.repository = repository;
+    }
+
+    <span class="cmt">// ✅ Listar com paginação e filtros opcionais</span>
+    <span class="kw">public</span> Page&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt; listar(
+            String nome, String cpf, Pageable pageable) {
+
+        Page&lt;<span class="cls">Beneficiario</span>&gt; page;
+
+        <span class="kw">if</span> (cpf != <span class="kw">null</span> &amp;&amp; !cpf.isBlank()) {
+            <span class="cmt">// Filtro exato por CPF (prioridade)</span>
+            page = repository.findByCpf(cpf, pageable);
+        } <span class="kw">else if</span> (nome != <span class="kw">null</span> &amp;&amp; !nome.isBlank()) {
+            <span class="cmt">// Filtro parcial por nome</span>
+            page = repository.findByNomeContainingIgnoreCase(nome, pageable);
+        } <span class="kw">else</span> {
+            <span class="cmt">// Sem filtro: lista paginada</span>
+            page = repository.findAll(pageable);
+        }
+
+        <span class="kw">return</span> page.map(<span class="kw">this</span>::toResponseDTO);
+    }
+
+    <span class="cmt">// ✅ Buscar por ID</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioResponseDTO</span> buscarPorId(Long idBeneficiario) {
+        <span class="kw">return</span> repository.findById(idBeneficiario)
+                .map(<span class="kw">this</span>::toResponseDTO)
+                .orElseThrow(() -> <span class="kw">new</span> RuntimeException(
+                    <span class="str">"Beneficiário não encontrado: "</span> + idBeneficiario));
+    }
+
+    <span class="cmt">// ✅ Criar (POST)</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioResponseDTO</span> criar(<span class="cls">BeneficiarioRequestDTO</span> dto) {
+        <span class="kw">if</span> (repository.existsByCpf(dto.cpf())) {
+            <span class="kw">throw new</span> RuntimeException(<span class="str">"CPF já cadastrado"</span>);
+        }
+        <span class="cls">Beneficiario</span> entity = <span class="cls">Beneficiario</span>.builder()
+                .nome(dto.nome())
+                .cpf(dto.cpf())
+                .telefone(dto.telefone())
+                .endereco(dto.endereco())
+                .situacaoVulnerabilidade(dto.situacaoVulnerabilidade())
+                .dataCadastro(LocalDate.now())
+                .build();
+        <span class="kw">return</span> toResponseDTO(repository.save(entity));
+    }
+
+    <span class="cmt">// ✅ Atualizar total (PUT)</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioResponseDTO</span> atualizar(
+            Long idBeneficiario, <span class="cls">BeneficiarioRequestDTO</span> dto) {
+        <span class="cls">Beneficiario</span> entity = repository.findById(idBeneficiario)
+                .orElseThrow(() -> <span class="kw">new</span> RuntimeException(<span class="str">"Não encontrado"</span>));
+
+        entity.setNome(dto.nome());
+        entity.setCpf(dto.cpf());
+        entity.setTelefone(dto.telefone());
+        entity.setEndereco(dto.endereco());
+        entity.setSituacaoVulnerabilidade(dto.situacaoVulnerabilidade());
+
+        <span class="kw">return</span> toResponseDTO(repository.save(entity));
+    }
+
+    <span class="cmt">// ✅ Atualizar parcial (PATCH)</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioResponseDTO</span> atualizarParcial(
+            Long idBeneficiario, <span class="cls">BeneficiarioPatchDTO</span> dto) {
+        <span class="cls">Beneficiario</span> entity = repository.findById(idBeneficiario)
+                .orElseThrow(() -> <span class="kw">new</span> RuntimeException(<span class="str">"Não encontrado"</span>));
+
+        <span class="cmt">// Atualiza apenas os campos não-nulos</span>
+        <span class="kw">if</span> (dto.nome() != <span class="kw">null</span>) entity.setNome(dto.nome());
+        <span class="kw">if</span> (dto.telefone() != <span class="kw">null</span>) entity.setTelefone(dto.telefone());
+        <span class="kw">if</span> (dto.endereco() != <span class="kw">null</span>) entity.setEndereco(dto.endereco());
+        <span class="kw">if</span> (dto.situacaoVulnerabilidade() != <span class="kw">null</span>)
+            entity.setSituacaoVulnerabilidade(dto.situacaoVulnerabilidade());
+
+        <span class="kw">return</span> toResponseDTO(repository.save(entity));
+    }
+
+    <span class="cmt">// ✅ Deletar</span>
+    <span class="kw">public void</span> deletar(Long idBeneficiario) {
+        repository.deleteById(idBeneficiario);
+    }
+
+    <span class="cmt">// Mapeador Entity → Response DTO</span>
+    <span class="kw">private</span> <span class="cls">BeneficiarioResponseDTO</span> toResponseDTO(<span class="cls">Beneficiario</span> e) {
+        <span class="kw">return new</span> <span class="cls">BeneficiarioResponseDTO</span>(
+            e.getIdBeneficiario(), e.getNome(), e.getCpf(),
+            e.getTelefone(), e.getEndereco(),
+            e.getSituacaoVulnerabilidade(), e.getDataCadastro()
+        );
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- PAGINAÇÃO -->
+    <section id="paginacao">
+        <h2>📄 Paginação com <code>Pageable</code></h2>
+
+        <h3>Por que paginar?</h3>
+        <ul>
+            <li>Uma ONG pode ter <strong>milhares</strong> de beneficiários cadastrados.</li>
+            <li>Carregar todos de uma vez consome memória, banda e tempo.</li>
+            <li>O Front-end precisa de páginas para renderizar tabelas e listas.</li>
+        </ul>
+
+        <h3>Como funciona no Spring Data?</h3>
+        <p>O Spring Data JPA suporta paginação nativamente via interface <code>Pageable</code>. Basta adicionar o parâmetro no método do Repository:</p>
+        <pre><code><span class="cmt">// No Repository:</span>
+Page&lt;<span class="cls">Beneficiario</span>&gt; findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+
+<span class="cmt">// No Controller:</span>
+<span class="ann">@GetMapping</span>
+<span class="kw">public</span> ResponseEntity&lt;Page&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt;&gt; listar(
+        <span class="ann">@PageableDefault</span>(size = 10, sort = <span class="str">"nome"</span>) Pageable pageable) {
+    <span class="kw">return</span> ResponseEntity.ok(service.listarTodos(pageable));
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>Requisição do Cliente:</h3>
+        <div class="endpoint-box">
+            <span class="http-get">GET</span> /api/v1/beneficiarios?page=0&amp;size=10&amp;sort=nome,asc
+        </div>
+
+        <h3>Resposta (JSON):</h3>
+        <pre><code>{
+  "content": [
+    { "idBeneficiario": 1, "nome": "Ana Silva", ... },
+    { "idBeneficiario": 2, "nome": "Bruno Costa", ... }
+  ],
+  "pageable": { "pageNumber": 0, "pageSize": 10 },
+  "totalElements": 150,
+  "totalPages": 15,
+  "first": true,
+  "last": false
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 <code>Page&lt;T&gt;</code> vs <code>List&lt;T&gt;</code>:</strong><br>
+            <code>Page&lt;T&gt;</code> inclui metadados de paginação (<code>totalElements</code>, <code>totalPages</code>, <code>first</code>, <code>last</code>). O Front-end precisa dessas informações para renderizar os botões de paginação. Nunca retorne <code>List&lt;T&gt;</code> em endpoints que podem retornar muitos registros.
+        </div>
+    </section>
+
+    <!-- FILTROS -->
+    <section id="filtros">
+        <h2>🔍 Filtros Dinâmicos</h2>
+
+        <h3>O Problema</h3>
+        <p>Como permitir que o cliente filtre por múltiplos critérios sem criar um endpoint para cada combinação?</p>
+
+        <h3>Solução: Query Parameters Opcionais</h3>
+        <div class="endpoint-box">
+            <span class="http-get">GET</span> /api/v1/doacoes?dataInicio=2026-01-01&amp;dataFim=2026-08-22&amp;tipo=ALIMENTO
+        </div>
+
+        <h3>Implementação no Controller:</h3>
+        <pre><code><span class="ann">@GetMapping</span>
+<span class="kw">public</span> ResponseEntity&lt;Page&lt;<span class="cls">DoacaoResponseDTO</span>&gt;&gt; listarDoacoes(
+        <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) LocalDate dataInicio,
+        <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) LocalDate dataFim,
+        <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) String tipo,
+        <span class="ann">@PageableDefault</span>(size = 20) Pageable pageable) {
+    <span class="kw">return</span> ResponseEntity.ok(
+        doacaoService.listar(dataInicio, dataFim, tipo, pageable)
+    );
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="success-box">
+            <strong>✅ Boas Práticas de Filtros:</strong>
+            <ul style="margin-top: 10px;">
+                <li>Use <code>required = false</code> para tornar os filtros opcionais.</li>
+                <li>Combine filtros com paginação (sempre!).</li>
+                <li>Documente os filtros no OpenAPI/Swagger (Aula 06).</li>
+                <li>Para filtros complexos (muitos critérios), considere usar <code>Specification</code> do JPA.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- PAGINAÇÃO IMPL -->
+    <section id="paginacao-impl">
+        <h2>💻 Implementação: Repository com Paginação</h2>
+
+        <p>Atualize o <code>BeneficiarioRepository</code> para suportar paginação nos métodos de busca:</p>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.repository;
+
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.model.Beneficiario;
+<span class="kw">import</span> org.springframework.data.domain.Page;
+<span class="kw">import</span> org.springframework.data.domain.Pageable;
+<span class="kw">import</span> org.springframework.data.jpa.repository.JpaRepository;
+<span class="kw">import</span> org.springframework.stereotype.Repository;
+
+<span class="ann">@Repository</span>
+<span class="kw">public interface</span> <span class="cls">BeneficiarioRepository</span>
+        <span class="kw">extends</span> JpaRepository&lt;<span class="cls">Beneficiario</span>, Long&gt; {
+
+    <span class="cmt">// Paginado: busca por CPF exato</span>
+    Page&lt;<span class="cls">Beneficiario</span>&gt; findByCpf(String cpf, Pageable pageable);
+
+    <span class="cmt">// Paginado: busca parcial por nome (case-insensitive)</span>
+    Page&lt;<span class="cls">Beneficiario</span>&gt; findByNomeContainingIgnoreCase(
+        String nome, Pageable pageable);
+
+    <span class="cmt">// Verificação de unicidade (usado no POST)</span>
+    <span class="kw">boolean</span> existsByCpf(String cpf);
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Mágica do Spring Data:</strong> Basta adicionar o parâmetro <code>Pageable</code> ao método e mudar o retorno de <code>List</code> para <code>Page</code>. O Spring Data gera automaticamente o SQL com <code>LIMIT</code> e <code>OFFSET</code>.
+        </div>
+    </section>
+
+    <!-- IDEMPOTÊNCIA -->
+    <section id="idempotencia">
+        <h2>🔁 Idempotência</h2>
+
+        <h3>Definição Formal</h3>
+        <p>Uma operação é <strong>idempotente</strong> se executá-la múltiplas vezes produz o <strong>mesmo resultado</strong> que executá-la uma única vez.</p>
+
+        <h3>Exemplos Práticos</h3>
+        <table>
+            <thead>
+                <tr><th>Operação</th><th>Idempotente?</th><th>Por quê?</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="http-get">GET</span> /beneficiarios/1</td>
+                    <td>✅ Sim</td>
+                    <td>Ler não altera nada. 1x ou 1000x = mesmo resultado.</td>
+                </tr>
+                <tr>
+                    <td><span class="http-put">PUT</span> /beneficiarios/1</td>
+                    <td>✅ Sim</td>
+                    <td>Substituir com os mesmos dados 1x ou 10x = mesmo estado final.</td>
+                </tr>
+                <tr>
+                    <td><span class="http-delete">DELETE</span> /beneficiarios/1</td>
+                    <td>✅ Sim</td>
+                    <td>Apagar 1x = recurso gone. Apagar 10x = ainda gone (404).</td>
+                </tr>
+                <tr>
+                    <td><span class="http-post">POST</span> /beneficiarios</td>
+                    <td>❌ Não</td>
+                    <td>Cada chamada cria um novo registro. 3 chamadas = 3 beneficiários.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Por que Idempotência Importa?</h3>
+        <p>Redes são <strong>não confiáveis</strong>. Imagine este cenário:</p>
+        <ol>
+            <li>O Front-end envia um <code>POST /doacoes</code>.</li>
+            <li>O servidor processa e cria a doação com sucesso.</li>
+            <li>A resposta se perde na rede (timeout).</li>
+            <li>O Front-end, achando que falhou, <strong>reenvia</strong> o mesmo POST.</li>
+            <li>Resultado: <strong>doação duplicada</strong> no banco.</li>
+        </ol>
+
+        <h3>Soluções para POST Idempotente</h3>
+        <ul>
+            <li><strong>Validação de unicidade:</strong> Verificar se já existe um registro com os mesmos dados (ex: CPF, combinação doador+data+valor).</li>
+            <li><strong>Idempotency-Key:</strong> O cliente envia um cabeçalho <code>Idempotency-Key: uuid-123</code>. O servidor verifica se já processou essa chave.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Na SocialConnect:</strong> O POST de beneficiário já é protegido contra duplicação pela validação de CPF único (<code>existsByCpf</code>). Isso torna a operação "efetivamente idempotente" para o caso mais comum.
+        </div>
+    </section>
+
+    <!-- MOB PROGRAMMING -->
+    <section id="mob">
+        <h2>🚀 Mob Programming: CRUD de Doações</h2>
+
+        <h3>Desafio da Aula</h3>
+        <p>Implementar o CRUD completo de <strong>Doações</strong> com todas as boas práticas da aula:</p>
+        <ol>
+            <li>DTOs separados (<code>DoacaoRequestDTO</code> / <code>DoacaoResponseDTO</code>)</li>
+            <li>Paginação com <code>Pageable</code></li>
+            <li>Filtros por <code>dataInicio</code>, <code>dataFim</code> e <code>tipo</code></li>
+            <li>PUT e PATCH funcionais</li>
+            <li>Semântica HTTP rigorosa (201, 204, 404, 409)</li>
+        </ol>
+
+        <h3>Papéis no Mob (rotacionar a cada 10 min)</h3>
+        <table>
+            <thead>
+                <tr><th>Papel</th><th>Responsabilidade</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Driver</strong></td><td>Digita o código. Segue as instruções do Navigator.</td></tr>
+                <tr><td><strong>Navigator</strong></td><td>Orienta a lógica, revisa em tempo real, decide a arquitetura.</td></tr>
+                <tr><td><strong>Researcher</strong></td><td>Consulta a documentação (Spring Data, OpenAPI) quando necessário.</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Script de Migration de Referência</h3>
+        <pre><code><span class="cmt">-- V3__create_doacoes_table.sql</span>
+<span class="kw">CREATE TABLE</span> doacoes (
+    id_doacao <span class="cls">BIGINT</span> <span class="kw">GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY</span>,
+    id_doador <span class="cls">BIGINT</span> <span class="kw">NOT NULL</span>,
+    data_doacao <span class="cls">DATE</span> <span class="kw">NOT NULL</span>,
+    valor <span class="cls">DECIMAL</span>(10,2),
+    tipo <span class="cls">VARCHAR</span>(20) <span class="kw">NOT NULL</span>,
+    descricao <span class="cls">VARCHAR</span>(500),
+    <span class="kw">CONSTRAINT</span> fk_doacao_doador
+        <span class="kw">FOREIGN KEY</span> (id_doador) <span class="kw">REFERENCES</span> doadores(id_doador)
+);
+
+<span class="kw">CREATE INDEX</span> idx_doacoes_data <span class="kw">ON</span> doacoes(data_doacao);
+<span class="kw">CREATE INDEX</span> idx_doacoes_tipo <span class="kw">ON</span> doacoes(tipo);</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- ARMADILHAS -->
+    <section id="armadilhas">
+        <h2>⚠️ Armadilhas Comuns</h2>
+
+        <h3>1. Retornar 200 no POST</h3>
+        <p><strong>❌ Errado:</strong> <code>return ResponseEntity.ok(salvo);</code></p>
+        <p><strong>✅ Correto:</strong> <code>return ResponseEntity.created(location).body(salvo);</code></p>
+
+        <h3>2. PUT parcial (esquecer campos)</h3>
+        <p><strong>❌ Problema:</strong> O cliente envia apenas <code>nome</code> no PUT. Os demais campos viram <code>null</code>.</p>
+        <p><strong>✅ Solução:</strong> Use PATCH para atualizações parciais. PUT exige todos os campos.</p>
+
+        <h3>3. Paginação sem total</h3>
+        <p><strong>❌ Errado:</strong> Retornar <code>List&lt;T&gt;</code> em vez de <code>Page&lt;T&gt;</code>.</p>
+        <p><strong>✅ Correto:</strong> Use <code>Page&lt;T&gt;</code> para incluir <code>totalElements</code> e <code>totalPages</code>.</p>
+
+        <h3>4. Filtros hardcoded</h3>
+        <p><strong>❌ Errado:</strong> Criar <code>/doacoes/por-data</code>, <code>/doacoes/por-tipo</code>, etc.</p>
+        <p><strong>✅ Correto:</strong> Use query parameters opcionais: <code>/doacoes?dataInicio=...&amp;tipo=...</code></p>
+
+        <h3>5. Ignorar idempotência no POST</h3>
+        <p><strong>❌ Problema:</strong> POST duplicado cria registros repetidos.</p>
+        <p><strong>✅ Solução:</strong> Valide unicidade (ex: <code>existsByCpf</code>) e retorne <code>409 Conflict</code>.</p>
+    </section>
+
+    <!-- RESUMO -->
+    <section id="resumo">
+        <h2>📝 Resumo da Aula</h2>
+        <ul>
+            <li><strong>Semântica HTTP</strong> é o contrato invisível entre API e cliente. Use os métodos e status codes corretos.</li>
+            <li><strong>DTOs separados</strong> (Request/Response) garantem segurança, clareza e desacoplamento.</li>
+            <li><strong>PUT</strong> substitui tudo; <strong>PATCH</strong> atualiza parcialmente.</li>
+            <li><strong>Paginação</strong> (<code>Pageable</code> + <code>Page&lt;T&gt;</code>) é obrigatória para listas grandes.</li>
+            <li><strong>Filtros dinâmicos</strong> via query parameters opcionais tornam a API flexível.</li>
+            <li><strong>Idempotência</strong> protege contra duplicações em redes instáveis.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Próxima Aula (06):</strong> Validação, Erros (RFC 7807) e Swagger<br>
+            <ul style="margin-top: 10px;">
+                <li>Bean Validation (<code>@NotBlank</code>, <code>@CPF</code>, <code>@Size</code>)</li>
+                <li>Problem Details (RFC 7807) para erros padronizados</li>
+                <li>i18n (mensagens em português)</li>
+                <li>SpringDoc OpenAPI com exemplos de requisições/respostas</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>Material de apoio gerado para a disciplina ITE005 | SocialConnect API | Aula 05</p>
+    </footer>
+</main>
+
+<script>
+    function copyCode(button) {
+        const pre = button.parentElement;
+        const code = pre.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.innerText;
+            button.innerText = 'Copiado!';
+            button.style.backgroundColor = '#4caf50';
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.style.backgroundColor = '';
+            }, 2000);
+        });
+    }
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

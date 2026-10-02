@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dojo de Testes - Aula 07</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e; --sidebar-bg: #252526; --text-color: #d4d4d4;
+            --accent-color: #007acc; --highlight-bg: #2d2d30;
+            --keyword: #569cd6; --string: #ce9178; --class: #4ec9b0;
+            --annotation: #dcdcaa; --comment: #6a9955;
+            --success-bg: #1a3a1a; --success-border: #4caf50;
+            --info-bg: #1a2a3a; --info-border: #2196f3;
+            --warning-bg: #3a2a00; --warning-border: #ffa500;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; display: flex; min-height: 100vh; }
+        nav { width: 280px; background-color: var(--sidebar-bg); padding: 20px; position: fixed; height: 100vh; overflow-y: auto; border-right: 1px solid #333; }
+        nav h2 { font-size: 1.2rem; color: var(--accent-color); margin-bottom: 20px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 8px; }
+        nav a { color: var(--text-color); text-decoration: none; font-size: 0.9rem; display: block; padding: 8px; border-radius: 4px; transition: background 0.2s; }
+        nav a:hover { background-color: var(--highlight-bg); color: #fff; }
+        main { margin-left: 280px; padding: 40px; max-width: 1000px; width: 100%; }
+        h1 { font-size: 2rem; margin-bottom: 10px; color: #fff; }
+        .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 30px; }
+        h2 { font-size: 1.6rem; color: var(--accent-color); margin-top: 40px; margin-bottom: 15px; border-left: 4px solid var(--accent-color); padding-left: 15px; }
+        h3 { font-size: 1.3rem; color: #fff; margin: 25px 0 10px 0; }
+        p, li { margin-bottom: 10px; }
+        .timer { font-size: 1.2rem; font-weight: bold; color: #ffcc00; float: right; }
+        .challenge-box { background-color: var(--info-bg); border-left: 4px solid var(--info-border); padding: 15px; margin: 15px 0; border-radius: 4px; }
+        .success-box { background-color: var(--success-bg); border-left: 4px solid var(--success-border); padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .warning-box { background-color: var(--warning-bg); border-left: 4px solid var(--warning-border); padding: 15px; margin: 20px 0; border-radius: 4px; }
+        pre { background-color: #0d0d0d; border: 1px solid #333; border-radius: 6px; padding: 15px; overflow-x: auto; margin: 15px 0; position: relative; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9rem; color: #d4d4d4; }
+        .kw { color: var(--keyword); } .str { color: var(--string); } .cls { color: var(--class); } .ann { color: var(--annotation); } .cmt { color: var(--comment); font-style: italic; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background-color: var(--accent-color); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; opacity: 0.7; }
+        .copy-btn:hover { opacity: 1; }
+        @media (max-width: 900px) { nav { width: 100%; height: auto; position: relative; } main { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+<nav>
+    <h2>🎪 Dojo de Testes</h2>
+    <ul>
+        <li><a href="#desafio">🎯 O Desafio</a></li>
+        <li><a href="#parte1">1️⃣ Complementar DoacaoServiceTest</a></li>
+        <li><a href="#parte2">2️⃣ Criar DoacaoControllerIntegrationTest</a></li>
+        <li><a href="#entrega">📦 Entrega</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h1>Dojo de Testes: Endpoint de Doações <span class="timer">⏱️ 40 min</span></h1>
+    <p class="subtitle">Aula 07 - Testes Automatizados e Qualidade | SocialConnect API</p>
+
+    <section id="desafio">
+        <h2>🎯 O Desafio</h2>
+        <div class="challenge-box">
+            <p><strong>Objetivo:</strong> Expandir a suíte de testes do módulo de Doações, seguindo os padrões já estabelecidos no repositório.</p>
+            <p><strong>Formato:</strong> Duplas (Driver + Navigator, rotacionar a cada 15 min).</p>
+        </div>
+    </section>
+
+    <section id="parte1">
+        <h2>1️⃣ Complementar: DoacaoServiceTest <span class="timer">15 min</span></h2>
+        <p>O arquivo <code>src/test/java/br/com/socialconnect/api/doacoes/service/DoacaoServiceTest.java</code> já existe e tem um teste de sucesso. Sua missão é adicionar o caminho triste.</p>
+        
+        <h4>Cenário a implementar:</h4>
+        <ul>
+            <li><strong>deveLancarExcecaoQuandoDoadorNaoExistir</strong>
+                <ul>
+                    <li>Mockar o <code>DoadorRepository.findById(999L)</code> para retornar <code>Optional.empty()</code>.</li>
+                    <li>Chamar <code>doacaoService.criar(dto)</code>.</li>
+                    <li>Usar <code>Assertions.assertThrows(RuntimeException.class, () -> { ... })</code> para verificar a exceção.</li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+
+    <section id="parte2">
+        <h2>2️⃣ Criar: DoacaoControllerIntegrationTest <span class="timer">25 min</span></h2>
+        <p>Crie o arquivo <code>src/test/java/br/com/socialconnect/api/doacoes/controller/DoacaoControllerIntegrationTest.java</code>.</p>
+        
+        <h4>Estrutura Obrigatória:</h4>
+        <pre><code><span class="ann">@SpringBootTest</span>(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+<span class="ann">@AutoConfigureTestDatabase</span>(replace = AutoConfigureTestDatabase.Replace.NONE)
+<span class="ann">@Testcontainers</span>
+<span class="ann">@DirtiesContext</span>(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+<span class="kw">class</span> <span class="cls">DoacaoControllerIntegrationTest</span> {
+
+    <span class="ann">@Container</span>
+    <span class="kw">static</span> <span class="cls">PostgreSQLContainer</span>&lt;?&gt; postgres = <span class="kw">new</span> <span class="cls">PostgreSQLContainer</span>&lt;&gt;(<span class="str">"postgres:17"</span>);
+
+    <span class="ann">@Autowired</span>
+    <span class="kw">private</span> <span class="cls">TestRestTemplate</span> restTemplate;
+
+    <span class="cmt">// Implementar os 2 testes abaixo</span>
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h4>Cenários a implementar:</h4>
+        <ol>
+            <li><strong>deveCriarDoacaoQuandoDadosValidos</strong>: Enviar POST com dados válidos e verificar status <code>201 Created</code> e <code>idDoacao</code> não nulo.</li>
+            <li><strong>deveRetornar400QuandoDataFutura</strong>: Enviar POST com <code>dataDoacao</code> = <code>LocalDate.now().plusDays(10)</code> e verificar status <code>400 Bad Request</code> e mensagem de erro contendo "futuro".</li>
+        </ol>
+    </section>
+
+    <section id="entrega">
+        <h2>📦 Entrega e Validação</h2>
+        <div class="success-box">
+            <strong>✅ Checklist de Sucesso:</strong>
+            <ul style="margin-top: 10px;">
+                <li>[ ] O comando <code>mvn test</code> executa com <code>BUILD SUCCESS</code>.</li>
+                <li>[ ] Os testes seguem o padrão AAA com comentários <code>// ARRANGE</code>, <code>// ACT</code>, <code>// ASSERT</code>.</li>
+                <li>[ ] O teste de integração usa o Testcontainers (verificar logs do Docker).</li>
+                <li>[ ] Nomes dos métodos são descritivos (ex: <code>deveRetornar400QuandoDataFutura</code>).</li>
+            </ul>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ Atenção:</strong> Certifique-se de que o Docker Desktop (ou Docker Engine) está rodando na sua máquina antes de executar os testes de integração, pois o Testcontainers precisa dele para subir o PostgreSQL.
+        </div>
+    </section>
+</main>
+
+<script>
+    function copyCode(button) {
+        const pre = button.parentElement;
+        const code = pre.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            button.innerText = 'Copiado!';
+            button.style.backgroundColor = '#4caf50';
+            setTimeout(() => { button.innerText = 'Copiar'; button.style.backgroundColor = ''; }, 2000);
+        });
+    }
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
+</body>
+</html>

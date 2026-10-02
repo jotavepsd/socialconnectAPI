@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 06 - Material Didático: Validação, Erros (RFC 7807) e Swagger</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --sidebar-bg: #252526;
+            --text-color: #d4d4d4;
+            --accent-color: #007acc;
+            --highlight-bg: #2d2d30;
+            --keyword: #569cd6;
+            --string: #ce9178;
+            --class: #4ec9b0;
+            --annotation: #dcdcaa;
+            --comment: #6a9955;
+            --warning-bg: #3a2a00;
+            --warning-border: #ffa500;
+            --success-bg: #1a3a1a;
+            --success-border: #4caf50;
+            --info-bg: #1a2a3a;
+            --info-border: #2196f3;
+            --danger-bg: #3a1a1a;
+            --danger-border: #f44336;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            display: flex;
+            min-height: 100vh;
+        }
+        nav {
+            width: 320px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+        nav h2 {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 6px; }
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        nav a:hover { background-color: var(--highlight-bg); color: #fff; }
+        nav .section-title {
+            color: #888;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        main {
+            margin-left: 320px;
+            padding: 40px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; }
+        .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 30px; }
+        h2 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-top: 50px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+        }
+        h3 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin: 30px 0 15px 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+        h4 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin: 20px 0 10px 0;
+        }
+        p { margin-bottom: 15px; }
+        .golden-rule {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .info-box {
+            background-color: var(--info-bg);
+            border-left: 4px solid var(--info-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success-box {
+            background-color: var(--success-bg);
+            border-left: 4px solid var(--success-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .danger-box {
+            background-color: var(--danger-bg);
+            border-left: 4px solid var(--danger-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+        }
+        code {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+        .kw { color: var(--keyword); }
+        .str { color: var(--string); }
+        .cls { color: var(--class); }
+        .ann { color: var(--annotation); }
+        .cmt { color: var(--comment); font-style: italic; }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .copy-btn:hover { opacity: 1; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin-bottom: 10px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #2d2d30;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+        th {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #252526; }
+        .endpoint-box {
+            background-color: #2d2d30;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+        }
+        .http-get { color: #61affe; font-weight: bold; }
+        .http-post { color: #49cc90; font-weight: bold; }
+        .http-put { color: #fca130; font-weight: bold; }
+        .http-delete { color: #f93e3e; font-weight: bold; }
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 1024px) {
+            nav { width: 250px; }
+            main { margin-left: 250px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>📚 Aula 06</h2>
+
+    <div class="section-title">Introdução</div>
+    <ul>
+        <li><a href="#objetivos">🎯 Objetivos</a></li>
+        <li><a href="#contexto">📖 Contexto</a></li>
+    </ul>
+
+    <div class="section-title">Bean Validation</div>
+    <ul>
+        <li><a href="#validation-intro">📋 O que é Bean Validation?</a></li>
+        <li><a href="#validation-anotacoes">🏷️ Anotações Comuns</a></li>
+        <li><a href="#validation-impl">💻 Implementação</a></li>
+        <li><a href="#validation-custom">🔧 Validações Customizadas</a></li>
+    </ul>
+
+    <div class="section-title">Problem Details (RFC 7807)</div>
+    <ul>
+        <li><a href="#rfc-intro">📄 O que é RFC 7807?</a></li>
+        <li><a href="#rfc-estrutura">🏗️ Estrutura Padrão</a></li>
+        <li><a href="#rfc-impl">💻 Implementação no Spring</a></li>
+        <li><a href="#rfc-handler">⚙️ Exception Handler</a></li>
+    </ul>
+
+    <div class="section-title">i18n (Internacionalização)</div>
+    <ul>
+        <li><a href="#i18n-intro">🌍 O que é i18n?</a></li>
+        <li><a href="#i18n-impl">💻 Configuração</a></li>
+    </ul>
+
+    <div class="section-title">SpringDoc OpenAPI</div>
+    <ul>
+        <li><a href="#openapi-intro">📘 O que é OpenAPI?</a></li>
+        <li><a href="#openapi-anotacoes">🏷️ Anotações SpringDoc</a></li>
+        <li><a href="#openapi-impl">💻 Implementação</a></li>
+        <li><a href="#openapi-exemplos">📝 Exemplos de Requisições</a></li>
+    </ul>
+
+    <div class="section-title">Swagger UI</div>
+    <ul>
+        <li><a href="#swagger-intro">🖥️ O que é Swagger UI?</a></li>
+        <li><a href="#swagger-navegacao">🧭 Navegando no Swagger</a></li>
+        <li><a href="#swagger-testes">🧪 Testando Endpoints</a></li>
+    </ul>
+
+    <div class="section-title">Dinâmica</div>
+    <ul>
+        <li><a href="#dinamica">🎯 Caça a Defeitos</a></li>
+        <li><a href="#armadilhas">⚠️ Armadilhas</a></li>
+        <li><a href="#resumo">📝 Resumo</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h1>Aula 06: Validação, Erros (RFC 7807) e Swagger</h1>
+    <p class="subtitle">Tópicos Especiais em Sistemas para Internet III | Material Didático Completo</p>
+
+    <div class="golden-rule">
+        🏆 REGRA DE OURO DA DISCIPLINA: Toda API deve ter documentação OpenAPI/Swagger completa, navegável e com exemplos de requisições/respostas. Sem Swagger = nota reduzida na A1.
+    </div>
+
+    <!-- OBJETIVOS -->
+    <section id="objetivos">
+        <h2>🎯 Objetivos de Aprendizagem</h2>
+        <p>Ao final desta aula, você será capaz de:</p>
+        <ul>
+            <li><strong>Aplicar</strong> Bean Validation para validar dados de entrada (DTOs).</li>
+            <li><strong>Implementar</strong> Problem Details (RFC 7807) para padronizar respostas de erro.</li>
+            <li><strong>Configurar</strong> internacionalização (i18n) para mensagens em português.</li>
+            <li><strong>Documentar</strong> APIs com SpringDoc OpenAPI usando anotações.</li>
+            <li><strong>Navegar</strong> e testar endpoints no Swagger UI.</li>
+            <li><strong>Customizar</strong> exemplos de requisições e respostas na documentação.</li>
+        </ul>
+    </section>
+
+    <!-- CONTEXTO -->
+    <section id="contexto">
+        <h2>📖 Contexto da Aula</h2>
+        <p>Nas aulas anteriores (03-05), construímos o CRUD de Beneficiários com semântica HTTP rigorosa. Mas e quando o cliente envia dados inválidos?</p>
+
+        <h3>Problemas que vamos resolver:</h3>
+        <ul>
+            <li>❌ Cliente envia CPF com letras → API aceita e grava lixo no banco.</li>
+            <li>❌ Cliente envia nome vazio → API grava registro sem nome.</li>
+            <li>❌ Ocorre um erro → API retorna <code>{"error": "erro"}</code> sem detalhes.</li>
+            <li>❌ Cliente quer testar a API → Não sabe quais campos enviar.</li>
+            <li>❌ Front-end quer integrar → Não tem documentação clara.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Soluções desta aula:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Bean Validation:</strong> Valida dados antes de chegar ao Service.</li>
+                <li><strong>Problem Details:</strong> Respostas de erro padronizadas e ricas em detalhes.</li>
+                <li><strong>Swagger:</strong> Documentação viva e navegável para clientes.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- BEAN VALIDATION -->
+    <section id="validation-intro">
+        <h2>📋 O que é Bean Validation?</h2>
+        
+        <p><strong>Bean Validation</strong> (Jakarta Validation) é uma especificação Java que permite declarar regras de validação diretamente nas classes (DTOs, Entities) usando anotações.</p>
+
+        <h3>Por que usar?</h3>
+        <ul>
+            <li><strong>Declarativo:</strong> Regras ficam no código, não espalhadas em ifs.</li>
+            <li><strong>Reutilizável:</strong> Mesmas anotações em qualquer DTO.</li>
+            <li><strong>Integrado:</strong> Spring Boot valida automaticamente com <code>@Valid</code>.</li>
+            <li><strong>Padronizado:</strong> Mensagens de erro consistentes.</li>
+        </ul>
+
+        <h3>Fluxo de Validação</h3>
+        <pre><code>Cliente envia JSON
+    ↓
+Controller recebe com @Valid
+    ↓
+Spring valida automaticamente
+    ↓
+Se inválido → 400 Bad Request com detalhes
+Se válido → Continua para o Service</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- ANOTAÇÕES -->
+    <section id="validation-anotacoes">
+        <h2>🏷️ Anotações de Validação Comuns</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Anotação</th>
+                    <th>Uso</th>
+                    <th>Exemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>@NotNull</code></td>
+                    <td>Não pode ser null</td>
+                    <td><code>@NotNull Long id</code></td>
+                </tr>
+                <tr>
+                    <td><code>@NotBlank</code></td>
+                    <td>Não pode ser null, vazio ou espaços</td>
+                    <td><code>@NotBlank String nome</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Size</code></td>
+                    <td>Tamanho mínimo/máximo</td>
+                    <td><code>@Size(min=3, max=50) String nome</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Email</code></td>
+                    <td>Formato de email válido</td>
+                    <td><code>@Email String email</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Pattern</code></td>
+                    <td>Regex personalizada</td>
+                    <td><code>@Pattern(regexp="\\d{11}") String cpf</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Min</code> / <code>@Max</code></td>
+                    <td>Valor mínimo/máximo</td>
+                    <td><code>@Min(0) Integer idade</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Past</code> / <code>@Future</code></td>
+                    <td>Data passada/futura</td>
+                    <td><code>@Past LocalDate nascimento</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>💡 Dica:</strong> Todas as anotações aceitam o parâmetro <code>message</code> para customizar a mensagem de erro:
+            <pre style="margin-top: 10px;"><code><span class="ann">@NotBlank</span>(message = <span class="str">"Nome é obrigatório"</span>)
+String nome;</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        </div>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO -->
+    <section id="validation-impl">
+        <h2>💻 Implementação: DTO com Validação</h2>
+
+        <h3>BeneficiarioRequestDTO.java</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.dto;
+
+<span class="kw">import</span> jakarta.validation.constraints.*;
+
+<span class="kw">public record</span> <span class="cls">BeneficiarioRequestDTO</span>(
+
+    <span class="ann">@NotBlank</span>(message = <span class="str">"Nome é obrigatório"</span>)
+    <span class="ann">@Size</span>(max = 150, message = <span class="str">"Nome deve ter no máximo 150 caracteres"</span>)
+    String nome,
+
+    <span class="ann">@NotBlank</span>(message = <span class="str">"CPF é obrigatório"</span>)
+    <span class="ann">@Pattern</span>(
+        regexp = <span class="str">"\\d{11}|\\d{14}"</span>,
+        message = <span class="str">"CPF deve ter 11 ou 14 dígitos"</span>
+    )
+    String cpf,
+
+    <span class="ann">@Size</span>(max = 20, message = <span class="str">"Telefone deve ter no máximo 20 caracteres"</span>)
+    String telefone,
+
+    <span class="ann">@Size</span>(max = 255, message = <span class="str">"Endereço deve ter no máximo 255 caracteres"</span>)
+    String endereco,
+
+    <span class="ann">@Size</span>(max = 500, message = <span class="str">"Situação deve ter no máximo 500 caracteres"</span>)
+    String situacaoVulnerabilidade
+
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>Controller com @Valid</h3>
+        <pre><code><span class="ann">@PostMapping</span>
+<span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioResponseDTO</span>&gt; criar(
+        <span class="ann">@Valid</span> <span class="ann">@RequestBody</span> <span class="cls">BeneficiarioRequestDTO</span> dto) {
+    <span class="cls">BeneficiarioResponseDTO</span> salvo = service.criar(dto);
+    URI location = URI.create(<span class="str">"/api/v1/beneficiarios/"</span> + salvo.idBeneficiario());
+    <span class="kw">return</span> ResponseEntity.created(location).body(salvo);
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 O que acontece:</strong>
+            <ul style="margin-top: 10px;">
+                <li>O <code>@Valid</code> dispara a validação automática do Spring.</li>
+                <li>Se houver erros, o Spring lança <code>MethodArgumentNotValidException</code>.</li>
+                <li>Por padrão, retorna <code>400 Bad Request</code> com lista de erros.</li>
+                <li>Na próxima seção, vamos customizar essa resposta com Problem Details.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- VALIDAÇÕES CUSTOMIZADAS -->
+    <section id="validation-custom">
+        <h2>🔧 Validações Customizadas</h2>
+
+        <p>Para validações complexas (ex: validar CPF com dígito verificador), crie anotações personalizadas:</p>
+
+        <h3>1. Criar a Anotação</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.validation;
+
+<span class="kw">import</span> jakarta.validation.*;
+<span class="kw">import</span> java.lang.annotation.*;
+
+<span class="ann">@Documented</span>
+<span class="ann">@Constraint</span>(validatedBy = CpfValidator.class)
+<span class="ann">@Target</span>({ ElementType.FIELD })
+<span class="ann">@Retention</span>(RetentionPolicy.RUNTIME)
+<span class="kw">public @interface</span> <span class="cls">CPF</span> {
+    String message() <span class="kw">default</span> <span class="str">"CPF inválido"</span>;
+    Class&lt;?&gt;[] groups() <span class="kw">default</span> {};
+    Class&lt;? extends Payload&gt;[] payload() <span class="kw">default</span> {};
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>2. Criar o Validator</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.validation;
+
+<span class="kw">import</span> jakarta.validation.*;
+
+<span class="kw">public class</span> <span class="cls">CpfValidator</span> <span class="kw">implements</span> ConstraintValidator&lt;CPF, String&gt; {
+
+    <span class="ann">@Override</span>
+    <span class="kw">public boolean</span> isValid(String cpf, ConstraintValidatorContext context) {
+        <span class="kw">if</span> (cpf == <span class="kw">null</span> || cpf.isBlank()) <span class="kw">return true</span>; <span class="cmt">// Use @NotBlank para obrigar</span>
+        
+        cpf = cpf.replaceAll(<span class="str">"\\D"</span>, <span class="str">""</span>); <span class="cmt">// Remove não-dígitos</span>
+        
+        <span class="kw">if</span> (cpf.length() != 11) <span class="kw">return false</span>;
+        
+        <span class="cmt">// Lógica de validação do CPF (dígitos verificadores)</span>
+        <span class="cmt">// ... implementação simplificada ...</span>
+        
+        <span class="kw">return true</span>;
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>3. Usar no DTO</h3>
+        <pre><code><span class="kw">public record</span> <span class="cls">BeneficiarioRequestDTO</span>(
+    <span class="ann">@NotBlank</span> String nome,
+    
+    <span class="ann">@CPF</span> <span class="cmt">// ← Anotação customizada</span>
+    String cpf,
+    
+    String telefone
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="success-box">
+            <strong>✅ Benefícios:</strong>
+            <ul style="margin-top: 10px;">
+                <li>Reutilizável em qualquer DTO que tenha CPF.</li>
+                <li>Mensagem de erro padronizada.</li>
+                <li>Lógica de validação centralizada.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- RFC 7807 -->
+    <section id="rfc-intro">
+        <h2>📄 O que é RFC 7807 (Problem Details)?</h2>
+
+        <p>A <strong>RFC 7807</strong> é um padrão da IETF que define um formato JSON padronizado para respostas de erro em APIs HTTP.</p>
+
+        <h3>Por que usar?</h3>
+        <ul>
+            <li><strong>Padronização:</strong> Todos os erros seguem o mesmo formato.</li>
+            <li><strong>Riqueza de detalhes:</strong> Inclui tipo, título, status, detalhes e instância.</li>
+            <li><strong>Machine-readable:</strong> Clientes podem processar erros automaticamente.</li>
+            <li><strong>Human-readable:</strong> Desenvolvedores entendem o erro rapidamente.</li>
+        </ul>
+
+        <h3>Exemplo de Resposta de Erro</h3>
+        <pre><code>{
+  <span class="str">"type"</span>: <span class="str">"https://socialconnect.api/errors/cpf-duplicado"</span>,
+  <span class="str">"title"</span>: <span class="str">"CPF já cadastrado"</span>,
+  <span class="str">"status"</span>: 409,
+  <span class="str">"detail"</span>: <span class="str">"O CPF 12345678900 já está cadastrado no sistema."</span>,
+  <span class="str">"instance"</span>: <span class="str">"/api/v1/beneficiarios"</span>,
+  <span class="str">"timestamp"</span>: <span class="str">"2026-08-29T14:30:00Z"</span>
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- ESTRUTURA -->
+    <section id="rfc-estrutura">
+        <h2>🏗️ Estrutura do Problem Details</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Obrigatório?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>type</code></td>
+                    <td>URI</td>
+                    <td>Identificador do tipo de erro (documentação)</td>
+                    <td>Não</td>
+                </tr>
+                <tr>
+                    <td><code>title</code></td>
+                    <td>String</td>
+                    <td>Resumo legível do erro</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td><code>status</code></td>
+                    <td>Integer</td>
+                    <td>Código HTTP do erro</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td><code>detail</code></td>
+                    <td>String</td>
+                    <td>Descrição detalhada do erro específico</td>
+                    <td>Não</td>
+                </tr>
+                <tr>
+                    <td><code>instance</code></td>
+                    <td>URI</td>
+                    <td>Identificador da ocorrência do erro</td>
+                    <td>Não</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>💡 Campos adicionais:</strong> Você pode adicionar campos customizados (ex: <code>timestamp</code>, <code>errors</code> para lista de validação).
+        </div>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO RFC -->
+    <section id="rfc-impl">
+        <h2>💻 Implementação no Spring Boot</h2>
+
+        <h3>1. Criar a Classe ProblemDetail</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.exception;
+
+<span class="kw">import</span> java.time.LocalDateTime;
+<span class="kw">import</span> java.util.List;
+
+<span class="kw">public record</span> <span class="cls">ProblemDetail</span>(
+    String type,
+    String title,
+    <span class="kw">int</span> status,
+    String detail,
+    String instance,
+    LocalDateTime timestamp,
+    List&lt;FieldError&gt; errors
+) {
+    <span class="kw">public record</span> <span class="cls">FieldError</span>(
+        String field,
+        String message
+    ) {}
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>2. Criar Exceções de Negócio</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.exception;
+
+<span class="kw">public class</span> <span class="cls">CpfDuplicadoException</span> <span class="kw">extends</span> RuntimeException {
+    <span class="kw">private final</span> String cpf;
+
+    <span class="kw">public</span> <span class="cls">CpfDuplicadoException</span>(String cpf) {
+        <span class="kw">super</span>(<span class="str">"CPF já cadastrado: "</span> + cpf);
+        <span class="kw">this</span>.cpf = cpf;
+    }
+
+    <span class="kw">public</span> String getCpf() {
+        <span class="kw">return</span> cpf;
+    }
+}
+
+<span class="kw">public class</span> <span class="cls">RecursoNaoEncontradoException</span> <span class="kw">extends</span> RuntimeException {
+    <span class="kw">public</span> <span class="cls">RecursoNaoEncontradoException</span>(String message) {
+        <span class="kw">super</span>(message);
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- EXCEPTION HANDLER -->
+    <section id="rfc-handler">
+        <h2>⚙️ Exception Handler Global</h2>
+
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.exception;
+
+<span class="kw">import</span> org.springframework.http.*;
+<span class="kw">import</span> org.springframework.web.bind.annotation.*;
+<span class="kw">import</span> org.springframework.web.context.request.WebRequest;
+<span class="kw">import</span> org.springframework.web.bind.MethodArgumentNotValidException;
+<span class="kw">import</span> java.time.LocalDateTime;
+<span class="kw">import</span> java.util.List;
+<span class="kw">import</span> java.util.stream.Collectors;
+
+<span class="ann">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="cls">GlobalExceptionHandler</span> {
+
+    <span class="cmt">// ✅ Erro de validação (400)</span>
+    <span class="ann">@ExceptionHandler</span>(MethodArgumentNotValidException.class)
+    <span class="kw">public</span> ResponseEntity&lt;ProblemDetail&gt; handleValidation(
+            MethodArgumentNotValidException ex, WebRequest request) {
+        
+        List&lt;ProblemDetail.FieldError&gt; errors = ex.getBindingResult()
+            .getFieldErrors().stream()
+            .map(e -> <span class="kw">new</span> ProblemDetail.FieldError(
+                e.getField(), 
+                e.getDefaultMessage()
+            ))
+            .collect(Collectors.toList());
+
+        ProblemDetail problem = <span class="kw">new</span> ProblemDetail(
+            <span class="str">"https://socialconnect.api/errors/validacao"</span>,
+            <span class="str">"Erro de validação"</span>,
+            HttpStatus.BAD_REQUEST.value(),
+            <span class="str">"Um ou mais campos são inválidos."</span>,
+            request.getDescription(<span class="kw">false</span>),
+            LocalDateTime.now(),
+            errors
+        );
+
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
+    }
+
+    <span class="cmt">// ✅ CPF duplicado (409)</span>
+    <span class="ann">@ExceptionHandler</span>(CpfDuplicadoException.class)
+    <span class="kw">public</span> ResponseEntity&lt;ProblemDetail&gt; handleCpfDuplicado(
+            CpfDuplicadoException ex, WebRequest request) {
+        
+        ProblemDetail problem = <span class="kw">new</span> ProblemDetail(
+            <span class="str">"https://socialconnect.api/errors/cpf-duplicado"</span>,
+            <span class="str">"CPF já cadastrado"</span>,
+            HttpStatus.CONFLICT.value(),
+            ex.getMessage(),
+            request.getDescription(<span class="kw">false</span>),
+            LocalDateTime.now(),
+            List.of()
+        );
+
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
+    }
+
+    <span class="cmt">// ✅ Recurso não encontrado (404)</span>
+    <span class="ann">@ExceptionHandler</span>(RecursoNaoEncontradoException.class)
+    <span class="kw">public</span> ResponseEntity&lt;ProblemDetail&gt; handleNaoEncontrado(
+            RecursoNaoEncontradoException ex, WebRequest request) {
+        
+        ProblemDetail problem = <span class="kw">new</span> ProblemDetail(
+            <span class="str">"https://socialconnect.api/errors/nao-encontrado"</span>,
+            <span class="str">"Recurso não encontrado"</span>,
+            HttpStatus.NOT_FOUND.value(),
+            ex.getMessage(),
+            request.getDescription(<span class="kw">false</span>),
+            LocalDateTime.now(),
+            List.of()
+        );
+
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
+    }
+
+    <span class="cmt">// ✅ Erro genérico (500)</span>
+    <span class="ann">@ExceptionHandler</span>(Exception.class)
+    <span class="kw">public</span> ResponseEntity&lt;ProblemDetail&gt; handleGenerico(
+            Exception ex, WebRequest request) {
+        
+        ProblemDetail problem = <span class="kw">new</span> ProblemDetail(
+            <span class="str">"https://socialconnect.api/errors/erro-interno"</span>,
+            <span class="str">"Erro interno do servidor"</span>,
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            <span class="str">"Ocorreu um erro inesperado. Tente novamente."</span>,
+            request.getDescription(<span class="kw">false</span>),
+            LocalDateTime.now(),
+            List.of()
+        );
+
+        <span class="kw">return</span> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="success-box">
+            <strong>✅ Resultado:</strong> Agora todas as respostas de erro seguem o padrão RFC 7807, com detalhes ricos e consistentes.
+        </div>
+    </section>
+
+    <!-- i18n -->
+    <section id="i18n-intro">
+        <h2>🌍 O que é i18n (Internacionalização)?</h2>
+
+        <p><strong>i18n</strong> (internationalization) é o processo de adaptar a aplicação para diferentes idiomas e regiões sem alterar o código.</p>
+
+        <h3>Por que usar?</h3>
+        <ul>
+            <li><strong>Mensagens em português:</strong> Usuários brasileiros entendem melhor.</li>
+            <li><strong>Facilidade de manutenção:</strong> Mensagens ficam em arquivos separados.</li>
+            <li><strong>Escalabilidade:</strong> Fácil adicionar novos idiomas no futuro.</li>
+        </ul>
+    </section>
+
+    <section id="i18n-impl">
+        <h2>💻 Configuração de i18n</h2>
+
+        <h3>1. Criar Arquivo de Mensagens</h3>
+        <p>Em <code>src/main/resources/messages.properties</code>:</p>
+        <pre><code><span class="cmt"># Mensagens de validação</span>
+NotBlank.nome=Nome é obrigatório
+Size.nome=Nome deve ter no máximo {1} caracteres
+NotBlank.cpf=CPF é obrigatório
+Pattern.cpf=CPF deve ter 11 ou 14 dígitos
+
+<span class="cmt"># Mensagens de negócio</span>
+cpf.duplicado=O CPF {0} já está cadastrado no sistema.
+recurso.nao.encontrado=Recurso não encontrado: {0}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>2. Configurar MessageSource</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.config;
+
+<span class="kw">import</span> org.springframework.context.*;
+<span class="kw">import</span> org.springframework.context.annotation.*;
+<span class="kw">import</span> org.springframework.web.servlet.LocaleResolver;
+<span class="kw">import</span> org.springframework.web.servlet.i18n.FixedLocaleResolver;
+<span class="kw">import</span> java.util.Locale;
+
+<span class="ann">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">I18nConfig</span> {
+
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> MessageSource messageSource() {
+        ResourceBundleMessageSource source = <span class="kw">new</span> ResourceBundleMessageSource();
+        source.setBasename(<span class="str">"messages"</span>);
+        source.setDefaultEncoding(<span class="str">"UTF-8"</span>);
+        <span class="kw">return</span> source;
+    }
+
+    <span class="ann">@Bean</span>
+    <span class="kw">public</span> LocaleResolver localeResolver() {
+        <span class="cmt">// Força português do Brasil</span>
+        <span class="kw">return new</span> FixedLocaleResolver(<span class="kw">new</span> Locale(<span class="str">"pt"</span>, <span class="str">"BR"</span>));
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h3>3. Usar no DTO</h3>
+        <pre><code><span class="kw">public record</span> <span class="cls">BeneficiarioRequestDTO</span>(
+    <span class="ann">@NotBlank</span>(message = <span class="str">"{NotBlank.nome}"</span>)
+    String nome,
+    
+    <span class="ann">@NotBlank</span>(message = <span class="str">"{NotBlank.cpf}"</span>)
+    String cpf
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Nota:</strong> As chaves <code>{NotBlank.nome}</code> são resolvidas automaticamente pelo Spring usando o <code>MessageSource</code>.
+        </div>
+    </section>
+
+    <!-- OPENAPI -->
+    <section id="openapi-intro">
+        <h2>📘 O que é OpenAPI?</h2>
+
+        <p><strong>OpenAPI</strong> (anteriormente Swagger) é uma especificação para descrever APIs RESTful em formato YAML ou JSON. Ela define:</p>
+        <ul>
+            <li>Endpoints disponíveis (paths)</li>
+            <li>Operações (GET, POST, PUT, DELETE)</li>
+            <li>Parâmetros (query, path, body)</li>
+            <li>Respostas (status codes, schemas)</li>
+            <li>Modelos de dados (schemas)</li>
+        </ul>
+
+        <h3>Por que usar?</h3>
+        <ul>
+            <li><strong>Documentação viva:</strong> Atualiza automaticamente com o código.</li>
+            <li><strong>Geração de clientes:</strong> Front-end pode gerar código automaticamente.</li>
+            <li><strong>Testes:</strong> Swagger UI permite testar endpoints diretamente.</li>
+            <li><strong>Contrato claro:</strong> Define o acordo entre back-end e front-end.</li>
+        </ul>
+    </section>
+
+    <!-- ANOTAÇÕES SPRINGDOC -->
+    <section id="openapi-anotacoes">
+        <h2>🏷️ Anotações SpringDoc</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Anotação</th>
+                    <th>Uso</th>
+                    <th>Exemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>@Tag</code></td>
+                    <td>Agrupar endpoints</td>
+                    <td><code>@Tag(name = "Beneficiários")</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Operation</code></td>
+                    <td>Descrever operação</td>
+                    <td><code>@Operation(summary = "Lista beneficiários")</code></td>
+                </tr>
+                <tr>
+                    <td><code>@ApiResponse</code></td>
+                    <td>Descrever resposta</td>
+                    <td><code>@ApiResponse(responseCode = "200", description = "Sucesso")</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Parameter</code></td>
+                    <td>Descrever parâmetro</td>
+                    <td><code>@Parameter(description = "ID do beneficiário")</code></td>
+                </tr>
+                <tr>
+                    <td><code>@Schema</code></td>
+                    <td>Descrever modelo</td>
+                    <td><code>@Schema(description = "Nome do beneficiário")</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO OPENAPI -->
+    <section id="openapi-impl">
+        <h2>💻 Implementação: Controller Documentado</h2>
+
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.controller;
+
+<span class="kw">import</span> io.swagger.v3.oas.annotations.*;
+<span class="kw">import</span> io.swagger.v3.oas.annotations.responses.ApiResponse;
+<span class="kw">import</span> io.swagger.v3.oas.annotations.tags.Tag;
+<span class="kw">import</span> org.springframework.http.ResponseEntity;
+<span class="kw">import</span> org.springframework.web.bind.annotation.*;
+
+<span class="ann">@RestController</span>
+<span class="ann">@RequestMapping</span>(<span class="str">"/api/v1/beneficiarios"</span>)
+<span class="ann">@Tag</span>(name = <span class="str">"Beneficiários"</span>, description = <span class="str">"API para gestão de beneficiários"</span>)
+<span class="kw">public class</span> <span class="cls">BeneficiarioController</span> {
+
+    <span class="ann">@GetMapping</span>
+    <span class="ann">@Operation</span>(
+        summary = <span class="str">"Lista todos os beneficiários"</span>,
+        description = <span class="str">"Retorna uma lista paginada de beneficiários com filtros opcionais"</span>
+    )
+    <span class="ann">@ApiResponse</span>(responseCode = <span class="str">"200"</span>, description = <span class="str">"Lista retornada com sucesso"</span>)
+    <span class="ann">@ApiResponse</span>(responseCode = <span class="str">"400"</span>, description = <span class="str">"Parâmetros inválidos"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;Page&lt;BeneficiarioResponseDTO&gt;&gt; listar(
+            <span class="ann">@Parameter</span>(description = <span class="str">"Nome para filtrar (parcial)"</span>)
+            <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) String nome,
+            
+            <span class="ann">@Parameter</span>(description = <span class="str">"CPF para filtrar (exato)"</span>)
+            <span class="ann">@RequestParam</span>(required = <span class="kw">false</span>) String cpf,
+            
+            Pageable pageable) {
+        <span class="cmt">// ...</span>
+    }
+
+    <span class="ann">@PostMapping</span>
+    <span class="ann">@Operation</span>(
+        summary = <span class="str">"Cria um novo beneficiário"</span>,
+        description = <span class="str">"Cadastra um novo beneficiário no sistema"</span>
+    )
+    <span class="ann">@ApiResponse</span>(responseCode = <span class="str">"201"</span>, description = <span class="str">"Beneficiário criado com sucesso"</span>)
+    <span class="ann">@ApiResponse</span>(responseCode = <span class="str">"400"</span>, description = <span class="str">"Dados inválidos"</span>)
+    <span class="ann">@ApiResponse</span>(responseCode = <span class="str">"409"</span>, description = <span class="str">"CPF já cadastrado"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;BeneficiarioResponseDTO&gt; criar(
+            <span class="ann">@RequestBody</span> <span class="ann">@Valid</span> BeneficiarioRequestDTO dto) {
+        <span class="cmt">// ...</span>
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+    </section>
+
+    <!-- EXEMPLOS -->
+    <section id="openapi-exemplos">
+        <h2>📝 Exemplos de Requisições/Respostas</h2>
+
+        <h3>Adicionar Exemplos no DTO</h3>
+        <pre><code><span class="kw">import</span> io.swagger.v3.oas.annotations.media.Schema;
+
+<span class="kw">public record</span> <span class="cls">BeneficiarioRequestDTO</span>(
+    
+    <span class="ann">@Schema</span>(description = <span class="str">"Nome completo do beneficiário"</span>, example = <span class="str">"Maria da Silva"</span>)
+    <span class="ann">@NotBlank</span>
+    String nome,
+    
+    <span class="ann">@Schema</span>(description = <span class="str">"CPF sem formatação"</span>, example = <span class="str">"12345678900"</span>)
+    <span class="ann">@NotBlank</span>
+    String cpf,
+    
+    <span class="ann">@Schema</span>(description = <span class="str">"Telefone com DDD"</span>, example = <span class="str">"11999999999"</span>)
+    String telefone
+
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Resultado no Swagger:</strong> O campo "Example Value" será preenchido automaticamente com os exemplos definidos, facilitando o teste.
+        </div>
+    </section>
+
+    <!-- SWAGGER UI -->
+    <section id="swagger-intro">
+        <h2>🖥️ O que é Swagger UI?</h2>
+
+        <p><strong>Swagger UI</strong> é uma interface web gerada automaticamente a partir da especificação OpenAPI. Ela permite:</p>
+        <ul>
+            <li>Visualizar todos os endpoints da API</li>
+            <li>Ver detalhes de cada operação (parâmetros, respostas)</li>
+            <li>Testar endpoints diretamente no navegador</li>
+            <li>Ver exemplos de requisições e respostas</li>
+        </ul>
+
+        <h3>Acesso</h3>
+        <div class="endpoint-box">
+            <span class="http-get">GET</span> http://localhost:8080/swagger-ui.html
+        </div>
+    </section>
+
+    <section id="swagger-navegacao">
+        <h2>🧭 Navegando no Swagger UI</h2>
+
+        <h3>Estrutura da Interface</h3>
+        <ol>
+            <li><strong>Tags:</strong> Endpoints agrupados por recurso (Beneficiários, Doadores, Doações)</li>
+            <li><strong>Operações:</strong> Cada endpoint com método HTTP (GET, POST, etc.)</li>
+            <li><strong>Try it out:</strong> Botão para testar o endpoint</li>
+            <li><strong>Execute:</strong> Executa a requisição e mostra a resposta</li>
+        </ol>
+
+        <h3>Passo a Passo para Testar</h3>
+        <ol>
+            <li>Clique em uma tag (ex: "Beneficiários")</li>
+            <li>Clique em um endpoint (ex: POST /api/v1/beneficiarios)</li>
+            <li>Clique em "Try it out"</li>
+            <li>Preencha os parâmetros (ou use o exemplo)</li>
+            <li>Clique em "Execute"</li>
+            <li>Veja a resposta (status, body, headers)</li>
+        </ol>
+
+        <div class="success-box">
+            <strong>✅ Dica:</strong> O Swagger UI é a melhor forma de explorar a API antes de integrar com o Front-end.
+        </div>
+    </section>
+
+    <section id="swagger-testes">
+        <h2>🧪 Testando Endpoints no Swagger</h2>
+
+        <h3>Exemplo: Criar Beneficiário</h3>
+        <ol>
+            <li>Acesse <code>http://localhost:8080/swagger-ui.html</code></li>
+            <li>Expanda "Beneficiários"</li>
+            <li>Clique em POST /api/v1/beneficiarios</li>
+            <li>Clique em "Try it out"</li>
+            <li>No campo "Request body", cole:
+                <pre><code>{
+  <span class="str">"nome"</span>: <span class="str">"Maria da Silva"</span>,
+  <span class="str">"cpf"</span>: <span class="str">"12345678900"</span>,
+  <span class="str">"telefone"</span>: <span class="str">"11999999999"</span>,
+  <span class="str">"endereco"</span>: <span class="str">"Rua das Flores, 123"</span>,
+  <span class="str">"situacaoVulnerabilidade"</span>: <span class="str">"Renda familiar baixa"</span>
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+            </li>
+            <li>Clique em "Execute"</li>
+            <li>Veja a resposta: <code>201 Created</code> com o beneficiário criado</li>
+        </ol>
+
+        <div class="info-box">
+            <strong>💡 Testando Erros:</strong> Tente enviar um CPF inválido ou duplicado para ver as respostas de erro padronizadas (RFC 7807).
+        </div>
+    </section>
+
+    <!-- DINÂMICA -->
+    <section id="dinamica">
+        <h2>🎯 Dinâmica: Caça a Defeitos</h2>
+
+        <h3>Atividade (30 min)</h3>
+        <p>Divida a turma em duplas. Cada dupla recebe um endpoint com problemas:</p>
+
+        <h4>Problemas para encontrar:</h4>
+        <ul>
+            <li>❌ Falta validação de CPF (aceita letras)</li>
+            <li>❌ Erro retorna JSON genérico (não segue RFC 7807)</li>
+            <li>❌ Swagger não tem exemplos de requisição</li>
+            <li>❌ Mensagens de erro em inglês</li>
+            <li>❌ Falta documentação de parâmetros</li>
+        </ul>
+
+        <h4>Entregável:</h4>
+        <ul>
+            <li>Lista de problemas encontrados</li>
+            <li>Código corrigido (DTO com validação, Exception Handler, Swagger)</li>
+            <li>Apresentação rápida (2 min por dupla)</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Objetivo:</strong> Praticar a revisão crítica de código e documentação, simulando um Code Review real.
+        </div>
+    </section>
+
+    <!-- ARMADILHAS -->
+    <section id="armadilhas">
+        <h2>⚠️ Armadilhas Comuns</h2>
+
+        <h3>1. Esquecer @Valid no Controller</h3>
+        <p><strong>❌ Errado:</strong> <code>@RequestBody BeneficiarioRequestDTO dto</code></p>
+        <p><strong>✅ Correto:</strong> <code>@Valid @RequestBody BeneficiarioRequestDTO dto</code></p>
+        <p><strong>Sintoma:</strong> Validação não é executada, dados inválidos chegam ao Service.</p>
+
+        <h3>2. Mensagens de erro em inglês</h3>
+        <p><strong>❌ Errado:</strong> <code>"must not be blank"</code></p>
+        <p><strong>✅ Correto:</strong> Configurar i18n com <code>messages.properties</code></p>
+
+        <h3>3. Retornar stack trace no erro</h3>
+        <p><strong>❌ Errado:</strong> Expor detalhes internos do servidor (security risk)</p>
+        <p><strong>✅ Correto:</strong> Usar Problem Details com mensagem genérica para 500</p>
+
+        <h3>4. Swagger sem exemplos</h3>
+        <p><strong>❌ Errado:</strong> Campos vazios no Swagger UI</p>
+        <p><strong>✅ Correto:</strong> Usar <code>@Schema(example = "...")</code> nos DTOs</p>
+
+        <h3>5. Não documentar todos os status codes</h3>
+        <p><strong>❌ Errado:</strong> Apenas <code>@ApiResponse(responseCode = "200")</code></p>
+        <p><strong>✅ Correto:</strong> Documentar 200, 201, 400, 404, 409, 500</p>
+    </section>
+
+    <!-- RESUMO -->
+    <section id="resumo">
+        <h2>📝 Resumo da Aula</h2>
+
+        <ul>
+            <li><strong>Bean Validation:</strong> Valide dados de entrada com anotações (<code>@NotBlank</code>, <code>@Size</code>, <code>@Pattern</code>).</li>
+            <li><strong>Problem Details (RFC 7807):</strong> Padronize respostas de erro com estrutura rica e consistente.</li>
+            <li><strong>i18n:</strong> Use arquivos de mensagens para internacionalizar erros.</li>
+            <li><strong>SpringDoc OpenAPI:</strong> Documente endpoints com anotações (<code>@Tag</code>, <code>@Operation</code>, <code>@ApiResponse</code>).</li>
+            <li><strong>Swagger UI:</strong> Interface web para navegar e testar a API.</li>
+            <li><strong>Exemplos:</strong> Use <code>@Schema(example = "...")</code> para facilitar testes.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Próxima Aula (07):</strong> Testes Automatizados e Qualidade<br>
+            <ul style="margin-top: 10px;">
+                <li>Pirâmide de testes (unitários, integração, E2E)</li>
+                <li>JUnit 5 e Mockito</li>
+                <li>Testcontainers para testes de integração com banco real</li>
+                <li>Cobertura com propósito (não 100% cego)</li>
+            </ul>
+        </div>
+
+        <div class="golden-rule">
+            🏆 LEMBRETE PARA A A1: A avaliação A1 exige documentação OpenAPI completa e navegável. Sem Swagger = nota reduzida. Pratique desde já!
+        </div>
+    </section>
+
+    <footer>
+        <p>Material de apoio gerado para a disciplina ITE005 | SocialConnect API | Aula 06</p>
+    </footer>
+</main>
+
+<script>
+    function copyCode(button) {
+        const pre = button.parentElement;
+        const code = pre.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.innerText;
+            button.innerText = 'Copiado!';
+            button.style.backgroundColor = '#4caf50';
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.style.backgroundColor = '';
+            }, 2000);
+        });
+    }
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

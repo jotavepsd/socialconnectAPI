@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 03 - Material Didático Completo: Spring Boot e Arquitetura em Camadas</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --sidebar-bg: #252526;
+            --text-color: #d4d4d4;
+            --accent-color: #007acc;
+            --highlight-bg: #2d2d30;
+            --keyword: #569cd6;
+            --string: #ce9178;
+            --class: #4ec9b0;
+            --annotation: #dcdcaa;
+            --comment: #6a9955;
+            --warning-bg: #3a2a00;
+            --warning-border: #ffa500;
+            --success-bg: #1a3a1a;
+            --success-border: #4caf50;
+            --info-bg: #1a2a3a;
+            --info-border: #2196f3;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Navegação Lateral */
+        nav {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+
+        nav h2 {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        nav li { margin-bottom: 8px; }
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        nav a:hover { background-color: var(--highlight-bg); color: #fff; }
+        nav .section-title {
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        /* Conteúdo Principal */
+        main {
+            margin-left: 300px;
+            padding: 40px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 10px; color: #fff; }
+        .subtitle { font-size: 1.1rem; color: #888; margin-bottom: 30px; }
+        
+        h2 { 
+            font-size: 1.8rem; 
+            color: var(--accent-color); 
+            margin-top: 50px; 
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+        }
+
+        h3 { 
+            font-size: 1.4rem; 
+            color: #fff; 
+            margin: 30px 0 15px 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            margin: 20px 0 10px 0;
+        }
+
+        p { margin-bottom: 15px; }
+
+        /* Caixas de Destaque */
+        .golden-rule {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        .info-box {
+            background-color: var(--info-bg);
+            border-left: 4px solid var(--info-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background-color: var(--success-bg);
+            border-left: 4px solid var(--success-border);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        /* Blocos de Código */
+        pre {
+            background-color: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #d4d4d4;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: var(--keyword); }
+        .str { color: var(--string); }
+        .cls { color: var(--class); }
+        .ann { color: var(--annotation); }
+        .cmt { color: var(--comment); font-style: italic; }
+
+        /* Botão de Copiar */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .copy-btn:hover { opacity: 1; }
+
+        /* Listas */
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin-bottom: 10px; }
+
+        /* Tabelas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #2d2d30;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+        th {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #252526; }
+
+        /* Diagramas */
+        .diagram {
+            background-color: #2d2d30;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .diagram-box {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            min-width: 150px;
+        }
+        .diagram-arrow {
+            display: inline-block;
+            color: var(--accent-color);
+            font-size: 2rem;
+            margin: 0 10px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            nav { width: 250px; }
+            main { margin-left: 250px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>📚 Conteúdo da Aula</h2>
+    
+    <div class="section-title">Introdução</div>
+    <ul>
+        <li><a href="#objetivos">🎯 Objetivos de Aprendizagem</a></li>
+        <li><a href="#contexto">📖 Contexto da Aula</a></li>
+    </ul>
+
+    <div class="section-title">Conceitos Fundamentais</div>
+    <ul>
+        <li><a href="#arquitetura">🏗️ Arquitetura em Camadas</a></li>
+        <li><a href="#solid">⚡ Princípios SOLID</a></li>
+        <li><a href="#injecao">💉 Injeção de Dependência</a></li>
+        <li><a href="#dto">📦 DTOs e Records</a></li>
+        <li><a href="#http">🌐 Semântica HTTP</a></li>
+    </ul>
+
+    <div class="section-title">Implementação Prática</div>
+    <ul>
+        <li><a href="#entidade">1️⃣ Entidade JPA</a></li>
+        <li><a href="#dto-impl">2️⃣ DTO com Record</a></li>
+        <li><a href="#service-impl">3️⃣ Camada de Serviço</a></li>
+        <li><a href="#controller-impl">4️⃣ Controller REST</a></li>
+    </ul>
+
+    <div class="section-title">Boas Práticas</div>
+    <ul>
+        <li><a href="#fluxo">🔄 Fluxo de Requisição</a></li>
+        <li><a href="#armadilhas">⚠️ Armadilhas Comuns</a></li>
+        <li><a href="#referencias">📚 Referências</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h1>Aula 03: Spring Boot e Arquitetura em Camadas</h1>
+    <p class="subtitle">Tópicos Especiais em Sistemas para Internet III | Material Didático Completo</p>
+
+    <div class="golden-rule">
+        🏆 REGRA DE OURO DA DISCIPLINA: Chaves primárias no banco de dados DEVEM usar o prefixo <code>id_</code> (ex: <code>id_beneficiario</code>, <code>id_doacao</code>).
+    </div>
+
+    <!-- OBJETIVOS -->
+    <section id="objetivos">
+        <h2>🎯 Objetivos de Aprendizagem</h2>
+        <p>Ao final desta aula, você será capaz de:</p>
+        <ul>
+            <li><strong>Compreender</strong> a importância da separação de responsabilidades em uma aplicação web moderna.</li>
+            <li><strong>Implementar</strong> uma arquitetura em camadas (Controller, Service, Repository) seguindo os princípios SOLID.</li>
+            <li><strong>Aplicar</strong> injeção de dependência via construtor, evitando o uso de <code>@Autowired</code> em campos.</li>
+            <li><strong>Utilizar</strong> <code>record</code> do Java 21 para criar DTOs imutáveis e concisos.</li>
+            <li><strong>Garantir</strong> semântica HTTP correta com <code>ResponseEntity</code> (200 OK, 201 Created, 204 No Content, etc.).</li>
+            <li><strong>Aplicar</strong> o padrão <code>id_</code> para chaves primárias, tanto no mapeamento JPA quanto na documentação OpenAPI.</li>
+        </ul>
+    </section>
+
+    <!-- CONTEXTO -->
+    <section id="contexto">
+        <h2>📖 Contexto da Aula</h2>
+        <p>Na <strong>Aula 02</strong>, você criou o contrato OpenAPI da API SocialConnect, definindo os recursos (<code>/beneficiarios</code>, <code>/doadores</code>, <code>/doacoes</code>) e seus endpoints. Esse contrato é o "contrato" entre o back-end e o front-end (ou qualquer consumidor da API).</p>
+        
+        <p>Agora, na <strong>Aula 03</strong>, vamos transformar esse contrato em <strong>código funcional</strong>. Mas não vamos apenas "jogar código" em um único arquivo. Vamos estruturar a aplicação em camadas bem definidas, seguindo as melhores práticas da indústria.</p>
+
+        <div class="info-box">
+            <strong>💡 Por que separar em camadas?</strong><br>
+            Imagine que você precisa mudar o banco de dados de H2 para PostgreSQL. Se toda a lógica de negócio estiver misturada com o código HTTP, você terá que refatorar tudo. Com camadas bem definidas, você muda apenas a camada de Repository, e o resto do sistema continua funcionando.
+        </div>
+    </section>
+
+    <!-- ARQUITETURA EM CAMADAS -->
+    <section id="arquitetura">
+        <h2>🏗️ Arquitetura em Camadas</h2>
+        
+        <p>A arquitetura em camadas (também chamada de <strong>arquitetura multicamadas</strong> ou <strong>layered architecture</strong>) é um padrão de design que organiza o código em grupos de responsabilidade bem definidos. Cada camada tem um papel específico e se comunica apenas com as camadas adjacentes.</p>
+
+        <h3>As 4 Camadas Principais</h3>
+
+        <div class="diagram">
+            <div class="diagram-box">Controller<br><small>(HTTP)</small></div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-box">Service<br><small>(Regra de Negócio)</small></div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-box">Repository<br><small>(Persistência)</small></div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-box">Database<br><small>(Banco de Dados)</small></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Camada</th>
+                    <th>Responsabilidade</th>
+                    <th>Anotação Spring</th>
+                    <th>Exemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Controller</strong></td>
+                    <td>Receber requisições HTTP, validar entrada, devolver resposta HTTP</td>
+                    <td><code>@RestController</code></td>
+                    <td><code>BeneficiarioController</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Service</strong></td>
+                    <td>Conter a regra de negócio, orquestrar operações, validar regras complexas</td>
+                    <td><code>@Service</code></td>
+                    <td><code>BeneficiarioService</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Repository</strong></td>
+                    <td>Interagir com o banco de dados (CRUD, queries personalizadas)</td>
+                    <td><code>@Repository</code></td>
+                    <td><code>BeneficiarioRepository</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Model/Entity</strong></td>
+                    <td>Representar a estrutura de dados e o mapeamento ORM</td>
+                    <td><code>@Entity</code></td>
+                    <td><code>Beneficiario</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Fluxo de uma Requisição Típica</h3>
+        <ol>
+            <li><strong>Cliente</strong> envia uma requisição HTTP (ex: <code>POST /api/v1/beneficiarios</code>).</li>
+            <li><strong>Controller</strong> recebe a requisição, extrai os dados do corpo (JSON) e chama o Service.</li>
+            <li><strong>Service</strong> aplica a regra de negócio (ex: verificar se o CPF já existe) e chama o Repository.</li>
+            <li><strong>Repository</strong> persiste os dados no banco de dados e retorna a entidade salva.</li>
+            <li><strong>Service</strong> converte a entidade em DTO (para não expor a estrutura interna) e retorna ao Controller.</li>
+            <li><strong>Controller</strong> devolve a resposta HTTP com o status correto (ex: <code>201 Created</code>).</li>
+        </ol>
+
+        <div class="success-box">
+            <strong>✅ Benefícios dessa abordagem:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Testabilidade:</strong> Cada camada pode ser testada isoladamente (testes unitários).</li>
+                <li><strong>Manutenibilidade:</strong> Mudanças em uma camada não afetam as outras.</li>
+                <li><strong>Reutilização:</strong> O Service pode ser usado por múltiplos Controllers (ex: API REST e GraphQL).</li>
+                <li><strong>Segurança:</strong> A camada de Service pode aplicar validações de segurança antes de acessar o banco.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SOLID -->
+    <section id="solid">
+        <h2>⚡ Princípios SOLID Aplicados</h2>
+        
+        <p>Os princípios SOLID são cinco diretrizes de design que ajudam a criar software mais flexível, manutenível e escalável. Nesta aula, vamos focar em dois deles:</p>
+
+        <h3>1. Single Responsibility Principle (SRP) - Princípio da Responsabilidade Única</h3>
+        <p><strong>Definição:</strong> Uma classe deve ter apenas um motivo para mudar.</p>
+        
+        <div class="info-box">
+            <strong>Exemplo prático:</strong><br>
+            O <code>BeneficiarioController</code> deve apenas lidar com HTTP (receber requisições, devolver respostas). Ele <strong>NÃO</strong> deve conter lógica de negócio (ex: verificar se o CPF é válido). Essa lógica vai para o <code>BeneficiarioService</code>.
+        </div>
+
+        <h3>2. Dependency Inversion Principle (DIP) - Princípio da Inversão de Dependência</h3>
+        <p><strong>Definição:</strong> Módulos de alto nível não devem depender de módulos de baixo nível. Ambos devem depender de abstrações.</p>
+        
+        <div class="info-box">
+            <strong>Exemplo prático:</strong><br>
+            O <code>BeneficiarioService</code> não deve criar diretamente uma instância de <code>BeneficiarioRepository</code>. Em vez disso, ele recebe o Repository por injeção de dependência. Isso permite, por exemplo, trocar o Repository por um mock durante os testes.
+        </div>
+    </section>
+
+    <!-- INJEÇÃO DE DEPENDÊNCIA -->
+    <section id="injecao">
+        <h2>💉 Injeção de Dependência (DI)</h2>
+        
+        <p>A <strong>Injeção de Dependência</strong> é um padrão de design onde um objeto recebe suas dependências (outros objetos que ele precisa para funcionar) de fontes externas, em vez de criá-las internamente.</p>
+
+        <h3>Por que usar Injeção de Dependência?</h3>
+        <ul>
+            <li><strong>Desacoplamento:</strong> As classes não ficam "presas" a implementações específicas.</li>
+            <li><strong>Testabilidade:</strong> Facilita a criação de testes unitários com mocks.</li>
+            <li><strong>Flexibilidade:</strong> Permite trocar implementações sem alterar o código (ex: trocar H2 por PostgreSQL).</li>
+        </ul>
+
+        <h3>Formas de Injeção de Dependência no Spring</h3>
+
+        <h4>❌ Forma NÃO Recomendada: Injeção por Campo</h4>
+        <pre><code><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">BeneficiarioService</span> {
+
+    <span class="ann">@Autowired</span> <span class="cmt">// ⚠️ Evite essa abordagem</span>
+    <span class="kw">private</span> <span class="cls">BeneficiarioRepository</span> repository;
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+        
+        <p><strong>Problemas:</strong></p>
+        <ul>
+            <li>Dificulta testes unitários (você precisa do contexto do Spring para injetar a dependência).</li>
+            <li>Permite que o campo seja alterado após a construção do objeto (violando imutabilidade).</li>
+            <li>Esconde as dependências da classe (quem lê o código não sabe quais dependências são necessárias).</li>
+        </ul>
+
+        <h4>✅ Forma Recomendada: Injeção por Construtor</h4>
+        <pre><code><span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="cls">BeneficiarioService</span> {
+
+    <span class="kw">private final</span> <span class="cls">BeneficiarioRepository</span> repository;
+
+    <span class="cmt">// ✅ Injeção via construtor (padrão da disciplina)</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioService</span>(<span class="cls">BeneficiarioRepository</span> repository) {
+        <span class="kw">this</span>.repository = repository;
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <p><strong>Vantagens:</strong></p>
+        <ul>
+            <li><strong>Imutabilidade:</strong> O campo é <code>final</code>, garantindo que não será alterado.</li>
+            <li><strong>Testabilidade:</strong> Você pode criar o Service manualmente em testes, passando um mock do Repository.</li>
+            <li><strong>Transparência:</strong> As dependências ficam explícitas no construtor.</li>
+            <li><strong>Falha rápida:</strong> Se uma dependência não estiver disponível, o erro ocorre na inicialização, não em tempo de execução.</li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Regra da Disciplina:</strong> Sempre use injeção de dependência via construtor com campos <code>final</code>. Não use <code>@Autowired</code> em campos.
+        </div>
+    </section>
+
+    <!-- DTOs E RECORDS -->
+    <section id="dto">
+        <h2>📦 DTOs e Records do Java 21</h2>
+        
+        <h3>O que é um DTO?</h3>
+        <p><strong>DTO (Data Transfer Object)</strong> é um objeto simples que carrega dados entre processos. Ele é usado para transferir dados entre camadas (ex: entre o Controller e o Service) ou entre sistemas (ex: entre o back-end e o front-end).</p>
+
+        <h3>Por que usar DTOs em vez de Entities?</h3>
+        <ul>
+            <li><strong>Segurança:</strong> Você controla quais dados são expostos. A Entity pode ter campos sensíveis (ex: <code>senha</code>) que não devem ir para o cliente.</li>
+            <li><strong>Flexibilidade:</strong> O DTO pode ter uma estrutura diferente da Entity (ex: combinar dados de múltiplas tabelas).</li>
+            <li><strong>Desacoplamento:</strong> Mudanças na Entity não afetam diretamente o contrato da API.</li>
+            <li><strong>Performance:</strong> Você pode carregar apenas os dados necessários, evitando o problema de "N+1 queries".</li>
+        </ul>
+
+        <h3>Records do Java 21</h3>
+        <p>Um <code>record</code> é um tipo especial de classe introduzido no Java 14 (e consolidado no Java 16+) que é imutável por padrão. Ele gera automaticamente:</p>
+        <ul>
+            <li>Construtor com todos os campos.</li>
+            <li>Getters (sem o prefixo "get", apenas o nome do campo).</li>
+            <li>Métodos <code>equals()</code>, <code>hashCode()</code> e <code>toString()</code>.</li>
+        </ul>
+
+        <h4>Exemplo: DTO com Record</h4>
+        <pre><code><span class="kw">public record</span> <span class="cls">BeneficiarioDTO</span>(
+    Long idBeneficiario,
+    String nome,
+    String cpf,
+    String telefone,
+    String endereco,
+    String situacaoVulnerabilidade,
+    LocalDate dataCadastro
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <h4>Como usar o Record:</h4>
+        <pre><code><span class="cmt">// Criação</span>
+<span class="cls">BeneficiarioDTO</span> dto = <span class="kw">new</span> <span class="cls">BeneficiarioDTO</span>(
+    1L, <span class="str">"Maria da Silva"</span>, <span class="str">"12345678900"</span>, 
+    <span class="str">"11999999999"</span>, <span class="str">"Rua das Flores"</span>, 
+    <span class="str">"Renda familiar baixa"</span>, LocalDate.now()
+);
+
+<span class="cmt">// Acesso aos campos (sem "get")</span>
+System.out.println(dto.nome()); <span class="cmt">// "Maria da Silva"</span>
+System.out.println(dto.cpf()); <span class="cmt">// "12345678900"</span></code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Dica:</strong> Records são ideais para DTOs porque são imutáveis (você não pode alterar os dados após a criação) e concisos (menos código boilerplate).
+        </div>
+    </section>
+
+    <!-- SEMÂNTICA HTTP -->
+    <section id="http">
+        <h2>🌐 Semântica HTTP e ResponseEntity</h2>
+        
+        <p>A <strong>semântica HTTP</strong> refere-se ao uso correto dos códigos de status, métodos HTTP e cabeçalhos para comunicar o resultado de uma operação. Usar a semântica correta é essencial para uma API RESTful robusta.</p>
+
+        <h3>Códigos de Status HTTP Mais Comuns</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Significado</th>
+                    <th>Quando Usar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>200 OK</strong></td>
+                    <td>Requisição bem-sucedida</td>
+                    <td>GET, PUT (com corpo de resposta)</td>
+                </tr>
+                <tr>
+                    <td><strong>201 Created</strong></td>
+                    <td>Recurso criado com sucesso</td>
+                    <td>POST (com cabeçalho Location)</td>
+                </tr>
+                <tr>
+                    <td><strong>204 No Content</strong></td>
+                    <td>Requisição bem-sucedida, sem corpo de resposta</td>
+                    <td>DELETE, PUT (sem corpo)</td>
+                </tr>
+                <tr>
+                    <td><strong>400 Bad Request</strong></td>
+                    <td>Requisição inválida (erro do cliente)</td>
+                    <td>Validação de dados falhou</td>
+                </tr>
+                <tr>
+                    <td><strong>404 Not Found</strong></td>
+                    <td>Recurso não encontrado</td>
+                    <td>ID inexistente</td>
+                </tr>
+                <tr>
+                    <td><strong>500 Internal Server Error</strong></td>
+                    <td>Erro interno do servidor</td>
+                    <td>Exceção não tratada</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>ResponseEntity no Spring</h3>
+        <p>O <code>ResponseEntity</code> é uma classe do Spring que permite construir respostas HTTP completas, incluindo status, cabeçalhos e corpo.</p>
+
+        <h4>Exemplos de Uso:</h4>
+        <pre><code><span class="cmt">// 200 OK com corpo</span>
+<span class="kw">return</span> ResponseEntity.ok(dto);
+
+<span class="cmt">// 201 Created com cabeçalho Location</span>
+URI location = URI.create(<span class="str">"/api/v1/beneficiarios/"</span> + dto.idBeneficiario());
+<span class="kw">return</span> ResponseEntity.created(location).body(dto);
+
+<span class="cmt">// 204 No Content (sem corpo)</span>
+<span class="kw">return</span> ResponseEntity.noContent().build();
+
+<span class="cmt">// 404 Not Found</span>
+<span class="kw">return</span> ResponseEntity.notFound().build();</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="success-box">
+            <strong>✅ Regra da Disciplina:</strong> Sempre use <code>ResponseEntity</code> para devolver respostas HTTP. Nunca retorne diretamente a entidade ou DTO (ex: <code>return dto;</code>), pois isso não permite controlar o status HTTP.
+        </div>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO: ENTIDADE -->
+    <section id="entidade">
+        <h2>1️⃣ Implementação: Entidade JPA</h2>
+        
+        <p>A entidade JPA representa a estrutura de dados no banco de dados. Ela é mapeada para uma tabela usando anotações do JPA.</p>
+
+        <h3>Beneficiario.java</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.model;
+
+<span class="kw">import</span> jakarta.persistence.*;
+<span class="kw">import</span> lombok.*;
+<span class="kw">import</span> java.time.LocalDate;
+
+<span class="ann">@Entity</span> <span class="cmt">// Marca como entidade JPA</span>
+<span class="ann">@Table</span>(name = <span class="str">"beneficiarios"</span>) <span class="cmt">// Nome da tabela no banco</span>
+<span class="ann">@Getter</span>
+<span class="ann">@Setter</span>
+<span class="ann">@NoArgsConstructor</span>
+<span class="ann">@AllArgsConstructor</span>
+<span class="ann">@Builder</span> <span class="cmt">// Lombok gera construtores e builders</span>
+<span class="kw">public class</span> <span class="cls">Beneficiario</span> {
+
+    <span class="ann">@Id</span> <span class="cmt">// Chave primária</span>
+    <span class="ann">@GeneratedValue</span>(strategy = GenerationType.IDENTITY) <span class="cmt">// Auto-incremento</span>
+    <span class="ann">@Column</span>(name = <span class="str">"id_beneficiario"</span>) <span class="cmt">// ⚠️ Padrão id_ no banco</span>
+    <span class="kw">private</span> Long idBeneficiario; <span class="cmt">// CamelCase no Java</span>
+
+    <span class="ann">@Column</span>(nullable = <span class="kw">false</span>, length = 150)
+    <span class="kw">private</span> String nome;
+
+    <span class="ann">@Column</span>(nullable = <span class="kw">false</span>, unique = <span class="kw">true</span>, length = 14)
+    <span class="kw">private</span> String cpf;
+
+    <span class="ann">@Column</span>(length = 20)
+    <span class="kw">private</span> String telefone;
+
+    <span class="ann">@Column</span>(length = 255)
+    <span class="kw">private</span> String endereco;
+
+    <span class="ann">@Column</span>(name = <span class="str">"situacao_vulnerabilidade"</span>, length = 500)
+    <span class="kw">private</span> String situacaoVulnerabilidade;
+
+    <span class="ann">@Column</span>(name = <span class="str">"data_cadastro"</span>, nullable = <span class="kw">false</span>)
+    <span class="kw">private</span> LocalDate dataCadastro;
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Observação importante:</strong><br>
+            O atributo na classe Java é <code>idBeneficiario</code> (camelCase), mas a coluna no banco é <code>id_beneficiario</code> (snake_case com prefixo <code>id_</code>). O mapeamento é feito pela anotação <code>@Column(name = "id_beneficiario")</code>.
+        </div>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO: DTO -->
+    <section id="dto-impl">
+        <h2>2️⃣ Implementação: DTO com Record</h2>
+        
+        <p>O DTO é usado para transferir dados entre as camadas e para expor os dados na API. Ele não deve expor a entidade JPA diretamente.</p>
+
+        <h3>BeneficiarioDTO.java</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.dto;
+
+<span class="kw">import</span> java.time.LocalDate;
+
+<span class="cmt">// Record é imutável, conciso e ideal para DTOs no Java 21+</span>
+<span class="kw">public record</span> <span class="cls">BeneficiarioDTO</span>(
+    Long idBeneficiario,
+    String nome,
+    String cpf,
+    String telefone,
+    String endereco,
+    String situacaoVulnerabilidade,
+    LocalDate dataCadastro
+) {}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="success-box">
+            <strong>✅ Vantagens do Record:</strong>
+            <ul style="margin-top: 10px;">
+                <li>Imutabilidade garantida (os dados não podem ser alterados após a criação).</li>
+                <li>Código conciso (sem getters, setters, construtores boilerplate).</li>
+                <li>Métodos <code>equals()</code>, <code>hashCode()</code> e <code>toString()</code> gerados automaticamente.</li>
+                <li>Ideal para DTOs porque são simples containers de dados.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO: SERVICE -->
+    <section id="service-impl">
+        <h2>3️⃣ Implementação: Camada de Serviço</h2>
+        
+        <p>O Service contém a lógica de negócio da aplicação. Ele orquestra as operações, aplica validações e chama o Repository para persistir os dados.</p>
+
+        <h3>BeneficiarioService.java</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.service;
+
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.dto.BeneficiarioDTO;
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.model.Beneficiario;
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.repository.BeneficiarioRepository;
+<span class="kw">import</span> org.springframework.stereotype.Service;
+<span class="kw">import</span> java.util.List;
+
+<span class="ann">@Service</span> <span class="cmt">// Marca como um bean gerenciado pelo Spring</span>
+<span class="kw">public class</span> <span class="cls">BeneficiarioService</span> {
+
+    <span class="kw">private final</span> <span class="cls">BeneficiarioRepository</span> repository;
+
+    <span class="cmt">// ✅ Injeção de dependência via construtor (padrão da disciplina)</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioService</span>(<span class="cls">BeneficiarioRepository</span> repository) {
+        <span class="kw">this</span>.repository = repository;
+    }
+
+    <span class="cmt">// Lista todos os beneficiários</span>
+    <span class="kw">public</span> List&lt;<span class="cls">BeneficiarioDTO</span>&gt; listarTodos() {
+        <span class="kw">return</span> repository.findAll().stream()
+                .map(<span class="kw">this</span>::toDTO) <span class="cmt">// Converte Entity para DTO</span>
+                .toList();
+    }
+
+    <span class="cmt">// Busca um beneficiário por ID</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioDTO</span> buscarPorId(Long idBeneficiario) {
+        <span class="cls">Beneficiario</span> beneficiario = repository.findById(idBeneficiario)
+                .orElseThrow(() -> <span class="kw">new</span> RuntimeException(
+                    <span class="str">"Beneficiário não encontrado com o ID: "</span> + idBeneficiario
+                ));
+        <span class="kw">return</span> toDTO(beneficiario);
+    }
+
+    <span class="cmt">// Salva um novo beneficiário</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioDTO</span> salvar(<span class="cls">BeneficiarioDTO</span> dto) {
+        <span class="cls">Beneficiario</span> beneficiario = toEntity(dto); <span class="cmt">// Converte DTO para Entity</span>
+        beneficiario = repository.save(beneficiario); <span class="cmt">// Persiste no banco</span>
+        <span class="kw">return</span> toDTO(beneficiario); <span class="cmt">// Retorna o DTO com o ID gerado</span>
+    }
+
+    <span class="cmt">// Deleta um beneficiário por ID</span>
+    <span class="kw">public void</span> deletar(Long idBeneficiario) {
+        repository.deleteById(idBeneficiario);
+    }
+
+    <span class="cmt">// Métodos auxiliares para conversão entre Entity e DTO</span>
+    
+    <span class="kw">private</span> <span class="cls">BeneficiarioDTO</span> toDTO(<span class="cls">Beneficiario</span> entity) {
+        <span class="kw">return new</span> <span class="cls">BeneficiarioDTO</span>(
+                entity.getIdBeneficiario(), 
+                entity.getNome(), 
+                entity.getCpf(),
+                entity.getTelefone(), 
+                entity.getEndereco(), 
+                entity.getSituacaoVulnerabilidade(),
+                entity.getDataCadastro()
+        );
+    }
+
+    <span class="kw">private</span> <span class="cls">Beneficiario</span> toEntity(<span class="cls">BeneficiarioDTO</span> dto) {
+        <span class="kw">return</span> <span class="cls">Beneficiario</span>.builder()
+                .idBeneficiario(dto.idBeneficiario())
+                .nome(dto.nome())
+                .cpf(dto.cpf())
+                .telefone(dto.telefone())
+                .endereco(dto.endereco())
+                .situacaoVulnerabilidade(dto.situacaoVulnerabilidade())
+                .dataCadastro(dto.dataCadastro())
+                .build();
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Pontos importantes:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Injeção via construtor:</strong> O Repository é recebido no construtor e armazenado em um campo <code>final</code>.</li>
+                <li><strong>Conversão Entity ↔ DTO:</strong> Os métodos <code>toDTO()</code> e <code>toEntity()</code> fazem a conversão entre as camadas.</li>
+                <li><strong>Tratamento de erros:</strong> O método <code>buscarPorId()</code> lança uma exceção se o beneficiário não for encontrado (na Aula 06, vamos tratar isso com Problem Details).</li>
+                <li><strong>Builder pattern:</strong> O Lombok gera o método <code>builder()</code> para criar objetos de forma fluente.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- IMPLEMENTAÇÃO: CONTROLLER -->
+    <section id="controller-impl">
+        <h2>4️⃣ Implementação: Controller REST</h2>
+        
+        <p>O Controller é a porta de entrada da API. Ele recebe as requisições HTTP, chama o Service apropriado e devolve a resposta HTTP com o status correto.</p>
+
+        <h3>BeneficiarioController.java</h3>
+        <pre><code><span class="kw">package</span> br.com.socialconnect.api.beneficiarios.controller;
+
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.dto.BeneficiarioDTO;
+<span class="kw">import</span> br.com.socialconnect.api.beneficiarios.service.BeneficiarioService;
+<span class="kw">import</span> org.springframework.http.ResponseEntity;
+<span class="kw">import</span> org.springframework.web.bind.annotation.*;
+
+<span class="kw">import</span> java.net.URI;
+<span class="kw">import</span> java.util.List;
+
+<span class="ann">@RestController</span> <span class="cmt">// Marca como um controller REST</span>
+<span class="ann">@RequestMapping</span>(<span class="str">"/api/v1/beneficiarios"</span>) <span class="cmt">// URL base para todos os endpoints</span>
+<span class="kw">public class</span> <span class="cls">BeneficiarioController</span> {
+
+    <span class="kw">private final</span> <span class="cls">BeneficiarioService</span> service;
+
+    <span class="cmt">// ✅ Injeção de dependência via construtor</span>
+    <span class="kw">public</span> <span class="cls">BeneficiarioController</span>(<span class="cls">BeneficiarioService</span> service) {
+        <span class="kw">this</span>.service = service;
+    }
+
+    <span class="cmt">// GET /api/v1/beneficiarios - Lista todos os beneficiários</span>
+    <span class="ann">@GetMapping</span>
+    <span class="kw">public</span> ResponseEntity&lt;List&lt;<span class="cls">BeneficiarioDTO</span>&gt;&gt; listarTodos() {
+        <span class="kw">return</span> ResponseEntity.ok(service.listarTodos()); <span class="cmt">// 200 OK</span>
+    }
+
+    <span class="cmt">// GET /api/v1/beneficiarios/{idBeneficiario} - Busca por ID</span>
+    <span class="ann">@GetMapping</span>(<span class="str">"/{idBeneficiario}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioDTO</span>&gt; buscarPorId(
+            <span class="ann">@PathVariable</span> Long idBeneficiario) {
+        <span class="kw">return</span> ResponseEntity.ok(service.buscarPorId(idBeneficiario)); <span class="cmt">// 200 OK</span>
+    }
+
+    <span class="cmt">// POST /api/v1/beneficiarios - Cria um novo beneficiário</span>
+    <span class="ann">@PostMapping</span>
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cls">BeneficiarioDTO</span>&gt; salvar(
+            <span class="ann">@RequestBody</span> <span class="cls">BeneficiarioDTO</span> dto) {
+        <span class="cls">BeneficiarioDTO</span> salvo = service.salvar(dto);
+        
+        <span class="cmt">// ✅ Retorna 201 Created com o cabeçalho Location</span>
+        URI location = URI.create(<span class="str">"/api/v1/beneficiarios/"</span> + salvo.idBeneficiario());
+        <span class="kw">return</span> ResponseEntity.created(location).body(salvo);
+    }
+
+    <span class="cmt">// DELETE /api/v1/beneficiarios/{idBeneficiario} - Deleta um beneficiário</span>
+    <span class="ann">@DeleteMapping</span>(<span class="str">"/{idBeneficiario}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;Void&gt; deletar(
+            <span class="ann">@PathVariable</span> Long idBeneficiario) {
+        service.deletar(idBeneficiario);
+        <span class="kw">return</span> ResponseEntity.noContent().build(); <span class="cmt">// 204 No Content</span>
+    }
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+
+        <div class="info-box">
+            <strong>💡 Anotações importantes:</strong>
+            <ul style="margin-top: 10px;">
+                <li><code>@RestController</code>: Combina <code>@Controller</code> e <code>@ResponseBody</code>. Indica que os métodos retornam dados (JSON) em vez de views.</li>
+                <li><code>@RequestMapping</code>: Define a URL base para todos os endpoints do controller.</li>
+                <li><code>@GetMapping</code>, <code>@PostMapping</code>, <code>@DeleteMapping</code>: Mapeiam métodos HTTP específicos.</li>
+                <li><code>@PathVariable</code>: Extrai valores da URL (ex: <code>/beneficiarios/123</code> → <code>idBeneficiario = 123</code>).</li>
+                <li><code>@RequestBody</code>: Extrai o corpo da requisição (JSON) e converte para o objeto Java.</li>
+            </ul>
+        </div>
+
+        <div class="success-box">
+            <strong>✅ Semântica HTTP correta:</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>GET</strong> → <code>200 OK</code> com corpo de resposta.</li>
+                <li><strong>POST</strong> → <code>201 Created</code> com cabeçalho <code>Location</code> apontando para o novo recurso.</li>
+                <li><strong>DELETE</strong> → <code>204 No Content</code> (sem corpo de resposta).</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- FLUXO DE REQUISIÇÃO -->
+    <section id="fluxo">
+        <h2>🔄 Fluxo Completo de uma Requisição</h2>
+        
+        <p>Vamos acompanhar o fluxo de uma requisição <code>POST /api/v1/beneficiarios</code> desde o cliente até o banco de dados e de volta.</p>
+
+        <h3>Passo a Passo:</h3>
+        <ol>
+            <li><strong>Cliente</strong> envia a requisição:
+                <pre><code>POST /api/v1/beneficiarios
+Content-Type: application/json
+
+{
+  "nome": "Maria da Silva",
+  "cpf": "12345678900",
+  "telefone": "11999999999",
+  "endereco": "Rua das Flores, 123",
+  "situacaoVulnerabilidade": "Renda familiar baixa",
+  "dataCadastro": "2026-08-29"
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+            </li>
+            <li><strong>Controller</strong> recebe a requisição:
+                <ul>
+                    <li>O Spring converte o JSON em um objeto <code>BeneficiarioDTO</code> (usando <code>@RequestBody</code>).</li>
+                    <li>O método <code>salvar()</code> é chamado.</li>
+                </ul>
+            </li>
+            <li><strong>Service</strong> aplica a regra de negócio:
+                <ul>
+                    <li>Converte o DTO em Entity (<code>toEntity()</code>).</li>
+                    <li>(Futuramente) Valida se o CPF já existe.</li>
+                    <li>Chama o Repository para persistir.</li>
+                </ul>
+            </li>
+            <li><strong>Repository</strong> persiste no banco:
+                <ul>
+                    <li>O Spring Data JPA gera o SQL: <code>INSERT INTO beneficiarios (nome, cpf, ...) VALUES (...)</code>.</li>
+                    <li>O banco gera o <code>id_beneficiario</code> automaticamente.</li>
+                    <li>Retorna a Entity salva (com o ID gerado).</li>
+                </ul>
+            </li>
+            <li><strong>Service</strong> converte de volta para DTO:
+                <ul>
+                    <li>Chama <code>toDTO()</code> para não expor a Entity.</li>
+                    <li>Retorna o DTO para o Controller.</li>
+                </ul>
+            </li>
+            <li><strong>Controller</strong> devolve a resposta:
+                <pre><code>HTTP/1.1 201 Created
+Location: /api/v1/beneficiarios/1
+Content-Type: application/json
+
+{
+  "idBeneficiario": 1,
+  "nome": "Maria da Silva",
+  "cpf": "12345678900",
+  "telefone": "11999999999",
+  "endereco": "Rua das Flores, 123",
+  "situacaoVulnerabilidade": "Renda familiar baixa",
+  "dataCadastro": "2026-08-29"
+}</code><button class="copy-btn" onclick="copyCode(this)">Copiar</button></pre>
+            </li>
+        </ol>
+    </section>
+
+    <!-- ARMADILHAS -->
+    <section id="armadilhas">
+        <h2>⚠️ Armadilhas Comuns</h2>
+        
+        <p>Durante o desenvolvimento, é comum cometer alguns erros. Aqui estão os mais frequentes e como evitá-los:</p>
+
+        <h3>1. Esquecer as anotações <code>@Service</code> ou <code>@RestController</code></h3>
+        <p><strong>Sintoma:</strong> Erro <code>NoSuchBeanDefinitionException</code> ao iniciar a aplicação.</p>
+        <p><strong>Causa:</strong> O Spring não consegue encontrar o bean para injetar.</p>
+        <p><strong>Solução:</strong> Adicione a anotação correta na classe.</p>
+
+        <h3>2. Usar <code>@Autowired</code> em campos</h3>
+        <p><strong>Sintoma:</strong> Código funciona, mas dificulta testes e viola boas práticas.</p>
+        <p><strong>Solução:</strong> Use injeção via construtor com campos <code>final</code>.</p>
+
+        <h3>3. Underscore no nome do atributo Java</h3>
+        <p><strong>Sintoma:</strong> Erro de compilação ou convenção Java violada.</p>
+        <p><strong>Causa:</strong> Tentar nomear o atributo como <code>id_beneficiario</code> (com underscore) na classe Java.</p>
+        <p><strong>Solução:</strong> Use camelCase no Java (<code>idBeneficiario</code>) e mapeie para snake_case no banco com <code>@Column(name = "id_beneficiario")</code>.</p>
+
+        <h3>4. Esquecer o <code>@RequestBody</code> no POST</h3>
+        <p><strong>Sintoma:</strong> O DTO chega com todos os campos nulos.</p>
+        <p><strong>Causa:</strong> Sem <code>@RequestBody</code>, o Spring tenta ligar o JSON aos parâmetros da URL.</p>
+        <p><strong>Solução:</strong> Adicione <code>@RequestBody</code> no parâmetro do método.</p>
+
+        <h3>5. Retornar diretamente a Entity no Controller</h3>
+        <p><strong>Sintoma:</strong> A API exp
